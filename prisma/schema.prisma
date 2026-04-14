@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Vehicle {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  stockNumber   String?
+  vin           String?
+  make          String
+  model         String
+  trim          String?
+  year          Int
+  price         Float
+  msrp          Float?
+  mileage       Int
+  bodyStyle     String?
+  transmission  String?
+  engine        String?
+  fuelType      String?
+  driveType     String?
+  doors         Int?
+  seats         Int?
+  exteriorColor String?
+  interiorColor String?
+  description   String
+  features      String
+  images        String
+  status        String   @default("available")
+  featured      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model AdminUser {
+  id       String @id @default(cuid())
+  email    String @unique
+  password String
+}
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model FinanceApplication {
+  id             String   @id @default(cuid())
+  name           String
+  email          String
+  phone          String
+  dob            String?
+  sin            String?
+  street         String?
+  city           String?
+  state          String?
+  zip            String?
+  address        String?
+  timeAtAddress  String?
+  employer       String?
+  occupation     String?
+  income         Float?
+  timeAtJob      String?
+  vehicleId      String?
+  tradeIn        Boolean  @default(false)
+  tradeInDetails String?
+  reference1     String?
+  reference2     String?
+  consent        Boolean  @default(false)
+  message        String?
+  createdAt      DateTime @default(now())
+}
+
+model TradeInSubmission {
+  id            String   @id @default(cuid())
+  firstName     String
+  lastName      String
+  email         String
+  phone         String
+  year          String
+  make          String
+  model         String
+  trim          String?
+  vin           String?
+  mileage       String
+  color         String?
+  transmission  String?
+  condition     String?
+  mechanical    String?
+  exterior      String?
+  interior      String?
+  hasLoan       Boolean  @default(false)
+  payoffAmount  String?
+  photos        String?
+  videos        String?
+  createdAt     DateTime @default(now())
+}
+
+model Appointment {
+  id           String   @id @default(cuid())
+  type         String
+  date         String
+  time         String
+  vehicleId    String?
+  name         String
+  email        String
+  phone        String
+  notes        String?
+  createdAt    DateTime @default(now())
+}
+
+model CarFinderRequest {
+  id           String   @id @default(cuid())
+  name         String
+  email        String
+  phone        String?
+  make         String?
+  model        String?
+  minYear      Int?
+  maxYear      Int?
+  minPrice     Float?
+  maxPrice     Float?
+  bodyStyle    String?
+  transmission String?
+  fuelType     String?
+  driveType    String?
+  color        String?
+  maxMileage   Int?
+  features     String?
+  notes        String?
+  status       String   @default("open")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  group     String   @default("general")
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}

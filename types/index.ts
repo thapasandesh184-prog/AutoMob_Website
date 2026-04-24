@@ -10,6 +10,7 @@ export interface Vehicle {
   description: string;
   features: string[];
   images: string[];
+  videoUrl?: string | null;
   status: "available" | "sold" | "pending";
   featured: boolean;
   createdAt: string;

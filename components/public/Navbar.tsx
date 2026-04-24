@@ -44,6 +44,9 @@ export default function Navbar() {
   const x = settings.x || "#";
   const youtube = settings.youtube || "#";
   const phoneHref = `tel:${phone.replace(/\s+/g, "")}`;
+  const logoUrl = settings.logoUrl || "/logo.png";
+  const logoHeight = settings.logoHeight || "40";
+  const logoPosition = settings.logoPosition || "left"; // left | center
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass">
@@ -134,11 +137,11 @@ export default function Navbar() {
 
       {/* Main nav */}
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-20">
+        <div className={`flex items-center h-16 md:h-20 ${logoPosition === "center" ? "justify-center" : "justify-between"}`}>
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2" aria-label="SKay Auto group Home">
+          <Link href="/" className={`flex items-center gap-2 ${logoPosition === "center" ? "absolute left-1/2 -translate-x-1/2" : ""}`} aria-label="SKay Auto group Home">
             <div className="bg-black/50 backdrop-blur-sm rounded-lg px-2 py-1">
-              <img src="/logo.png" alt="SKay Auto group" className="h-8 md:h-10 w-auto object-contain" />
+              <img src={logoUrl} alt="SKay Auto group" className="w-auto object-contain" style={{ height: `${parseInt(logoHeight) || 40}px` }} />
             </div>
           </Link>
 

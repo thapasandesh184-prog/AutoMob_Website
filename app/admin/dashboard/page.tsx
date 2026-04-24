@@ -41,29 +41,21 @@ export default async function AdminDashboardPage() {
   let dbError: string | null = null;
 
   try {
-    const results = await Promise.all([
-      prisma.vehicle.count(),
-      prisma.vehicle.count({ where: { featured: true } }),
-      prisma.vehicle.count({ where: { status: "available" } }),
-      prisma.vehicle.findMany({ orderBy: { createdAt: "desc" }, take: 10 }),
-      prisma.contactSubmission.count(),
-      prisma.financeApplication.count(),
-      prisma.tradeInSubmission.count(),
-      prisma.appointment.count(),
-      prisma.carFinderRequest.count(),
-    ]);
-
-    [
-      totalCars,
-      featuredCars,
-      availableCars,
-      vehicles,
-      contactCount,
-      financeCount,
-      tradeInCount,
-      appointmentCount,
-      carFinderCount,
-    ] = results;
+    // Run sequentially to avoid exhausting the DB connection pool
+    // (shared hosting often has connection_limit=5)
+    totalCars = await prisma.vehicle.count();
+    featuredCars = await prisma.vehicle.count({ where: { featured: true } });
+    availableCars = await prisma.vehicle.count({ where: { status: "available" } });
+    vehicles = await prisma.vehicle.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      select: { id: true, make: true, model: true, year: true, price: true, status: true, featured: true },
+    });
+    contactCount = await prisma.contactSubmission.count();
+    financeCount = await prisma.financeApplication.count();
+    tradeInCount = await prisma.tradeInSubmission.count();
+    appointmentCount = await prisma.appointment.count();
+    carFinderCount = await prisma.carFinderRequest.count();
   } catch (error) {
     console.error("Dashboard DB error:", error);
     dbError =

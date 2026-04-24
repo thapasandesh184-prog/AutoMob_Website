@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ArrowUp, ArrowDown, Trash2, Film, ImageIcon } from "lucide-react";
 
 const vehicleSchema = z.object({
   make: z.string().min(1, "Make is required"),
@@ -42,7 +43,7 @@ const vehicleSchema = z.object({
 });
 
 export type VehicleFormData = z.infer<typeof vehicleSchema>;
-export type VehicleFormPayload = VehicleFormData & { images: string[] };
+export type VehicleFormPayload = VehicleFormData & { images: string[]; videoUrl?: string };
 
 interface VehicleFormProps {
   defaultValues?: Partial<VehicleFormPayload>;
@@ -55,10 +56,12 @@ export function VehicleForm({
   onSubmit,
   submitLabel,
 }: VehicleFormProps) {
-  const { images: initialImages = [], ...formDefaults } = defaultValues || {};
+  const { images: initialImages = [], videoUrl: initialVideo = "", ...formDefaults } = defaultValues || {};
   const [images, setImages] = useState<string[]>(initialImages);
+  const [videoUrl, setVideoUrl] = useState<string>(initialVideo);
   const [newImageUrl, setNewImageUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
 
   const {
     register,
@@ -104,30 +107,56 @@ export function VehicleForm({
     setImages((prev) => prev.filter((_, i) => i !== index));
   }
 
-  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  function handleMoveImage(index: number, direction: "up" | "down") {
+    if (direction === "up" && index === 0) return;
+    if (direction === "down" && index === images.length - 1) return;
+    const newIndex = direction === "up" ? index - 1 : index + 1;
+    setImages((prev) => {
+      const next = [...prev];
+      [next[index], next[newIndex]] = [next[newIndex], next[index]];
+      return next;
+    });
+  }
+
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>, type: "image" | "video") {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
     setUploading(true);
-    const formData = new FormData();
-    formData.append("image", file);
-    try {
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
-      if (!res.ok) throw new Error("Upload failed");
-      const data = await res.json();
-      setImages((prev) => [...prev, data.url]);
-    } catch (err) {
-      alert("Failed to upload image");
-    } finally {
-      setUploading(false);
-      e.target.value = "";
+    setUploadProgress(type === "image" ? `Uploading ${files.length} image(s)...` : "Uploading video...");
+
+    const uploadedUrls: string[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      setUploadProgress(`Uploading ${i + 1} of ${files.length}: ${file.name}`);
+      const formData = new FormData();
+      formData.append("image", file);
+      try {
+        const res = await fetch("/api/admin/upload", {
+          method: "POST",
+          body: formData,
+        });
+        if (!res.ok) throw new Error("Upload failed");
+        const data = await res.json();
+        uploadedUrls.push(data.url);
+      } catch (err) {
+        alert(`Failed to upload ${file.name}`);
+      }
     }
+
+    if (type === "image") {
+      setImages((prev) => [...prev, ...uploadedUrls]);
+    } else {
+      setVideoUrl(uploadedUrls[0] || "");
+    }
+
+    setUploading(false);
+    setUploadProgress("");
+    e.target.value = "";
   }
 
   async function handleFormSubmit(data: VehicleFormData) {
-    await onSubmit({ ...data, images });
+    await onSubmit({ ...data, images, videoUrl });
   }
 
   return (
@@ -273,8 +302,11 @@ export function VehicleForm({
         </div>
       </div>
 
-      <div className="space-y-4">
-        <Label>Images</Label>
+      {/* Images Section */}
+      <div className="space-y-4 border border-white/10 bg-[#0a0a0a] p-6">
+        <Label className="text-lg font-semibold">Images</Label>
+        <p className="text-xs text-white/40">First image will be used as the main cover photo. Drag order using arrows.</p>
+
         <div className="flex gap-2">
           <Input
             placeholder="Image URL"
@@ -285,27 +317,77 @@ export function VehicleForm({
             Add URL
           </Button>
         </div>
+
         <div className="flex items-center gap-2">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileUpload}
-            disabled={uploading}
-            className="text-sm text-muted-foreground file:mr-4 file:border-0 file:bg-gold file:px-3 file:py-1 file:text-sm file:font-medium file:text-black hover:file:bg-gold/90 cursor-pointer"
-          />
-          {uploading && <span className="text-sm text-muted-foreground">Uploading...</span>}
+          <label className="relative cursor-pointer inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-white/10 bg-black text-white hover:bg-white/5 rounded-md transition-colors">
+            <ImageIcon className="w-4 h-4" />
+            <span>Upload Multiple Images</span>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => handleFileUpload(e, "image")}
+              disabled={uploading}
+              className="absolute inset-0 opacity-0 cursor-pointer"
+            />
+          </label>
+          {uploading && <span className="text-sm text-muted-foreground">{uploadProgress}</span>}
         </div>
+
         {images.length > 0 && (
-          <ul className="space-y-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {images.map((url, idx) => (
-              <li key={idx} className="flex items-center justify-between border border-white/10 bg-black px-3 py-2">
-                <span className="truncate text-sm text-muted-foreground max-w-[80%]">{url}</span>
-                <Button type="button" variant="ghost" size="sm" onClick={() => handleRemoveImage(idx)}>
-                  Remove
-                </Button>
-              </li>
+              <div key={idx} className="relative group border border-white/10 bg-black overflow-hidden">
+                <div className="absolute top-1 left-1 z-10 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">
+                  {idx === 0 ? "Cover" : `#${idx + 1}`}
+                </div>
+                <img src={url} alt={`Vehicle ${idx + 1}`} className="w-full aspect-square object-cover" />
+                <div className="absolute inset-x-0 bottom-0 p-1 flex justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-black/60">
+                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-white hover:text-[#C0A66A]" onClick={() => handleMoveImage(idx, "up")} disabled={idx === 0}>
+                    <ArrowUp className="w-3.5 h-3.5" />
+                  </Button>
+                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-white hover:text-[#C0A66A]" onClick={() => handleMoveImage(idx, "down")} disabled={idx === images.length - 1}>
+                    <ArrowDown className="w-3.5 h-3.5" />
+                  </Button>
+                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-300" onClick={() => handleRemoveImage(idx)}>
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
+        )}
+      </div>
+
+      {/* Video Section */}
+      <div className="space-y-4 border border-white/10 bg-[#0a0a0a] p-6">
+        <Label className="text-lg font-semibold">Video</Label>
+        <div className="flex items-center gap-2">
+          <label className="relative cursor-pointer inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-white/10 bg-black text-white hover:bg-white/5 rounded-md transition-colors">
+            <Film className="w-4 h-4" />
+            <span>Upload Video</span>
+            <input
+              type="file"
+              accept="video/*"
+              onChange={(e) => handleFileUpload(e, "video")}
+              disabled={uploading}
+              className="absolute inset-0 opacity-0 cursor-pointer"
+            />
+          </label>
+          <span className="text-xs text-white/40">MP4, WebM, MOV supported</span>
+        </div>
+        {videoUrl && (
+          <div className="space-y-2">
+            <div className="relative border border-white/10 bg-black overflow-hidden max-w-md">
+              <video src={videoUrl} className="w-full aspect-video" controls muted playsInline />
+            </div>
+            <div className="flex items-center gap-2">
+              <Input value={videoUrl} readOnly className="bg-black border-white/10 text-white text-xs" />
+              <Button type="button" variant="outline" size="sm" onClick={() => setVideoUrl("")} className="border-red-500/30 text-red-400 hover:bg-red-500/10">
+                Remove
+              </Button>
+            </div>
+          </div>
         )}
       </div>
 

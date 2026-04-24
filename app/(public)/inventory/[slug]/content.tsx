@@ -336,6 +336,20 @@ export default function VehicleDetailContent({ vehicle }: VehicleDetailContentPr
                 ))}
               </div>
             )}
+
+            {/* Video */}
+            {vehicle.videoUrl && (
+              <div className="border border-white/10 bg-[#111] p-4">
+                <h3 className="text-sm font-medium text-white/60 mb-3 uppercase tracking-wider">Video Walkaround</h3>
+                <video
+                  src={vehicle.videoUrl}
+                  className="w-full aspect-video object-cover"
+                  controls
+                  playsInline
+                  poster={vehicle.images[0]}
+                />
+              </div>
+            )}
           </motion.div>
 
           {/* Vehicle Info */}

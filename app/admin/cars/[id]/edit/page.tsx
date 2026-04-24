@@ -37,6 +37,7 @@ export default function EditCarPage() {
           status: data.status,
           featured: data.featured,
           images: data.images ? data.images.split(",") : [],
+          videoUrl: data.videoUrl || undefined,
         });
       } catch (err) {
         toast.error("Failed to load vehicle");

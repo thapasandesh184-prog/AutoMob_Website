@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
 type Brand = { name: string; image: string };
@@ -147,6 +148,44 @@ export default function AdminSettingsPage() {
           </TabsList>
 
           <TabsContent value="general" className="space-y-6">
+            <SectionCard title="Logo">
+              <ImageField
+                label="Logo Image"
+                value={settings.logoUrl || ""}
+                onChange={(v) => updateSetting("logoUrl", v)}
+                onUpload={(f) => handleUpload("logoUrl", f)}
+                uploading={uploadingKey === "logoUrl"}
+              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-white/60 text-xs uppercase tracking-wider">Logo Height (px)</Label>
+                  <Select value={settings.logoHeight || "40"} onValueChange={(v) => updateSetting("logoHeight", v || "40")}>
+                    <SelectTrigger className="w-full bg-black border-white/10 text-white">
+                      <SelectValue placeholder="Select height" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="32">32px</SelectItem>
+                      <SelectItem value="40">40px</SelectItem>
+                      <SelectItem value="48">48px</SelectItem>
+                      <SelectItem value="56">56px</SelectItem>
+                      <SelectItem value="64">64px</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-white/60 text-xs uppercase tracking-wider">Logo Position</Label>
+                  <Select value={settings.logoPosition || "left"} onValueChange={(v) => updateSetting("logoPosition", v || "left")}>
+                    <SelectTrigger className="w-full bg-black border-white/10 text-white">
+                      <SelectValue placeholder="Select position" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="left">Left (with nav)</SelectItem>
+                      <SelectItem value="center">Center</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </SectionCard>
             <SectionCard title="Business Information">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Field label="Site Name" value={settings.siteName || ""} onChange={(v) => updateSetting("siteName", v)} />

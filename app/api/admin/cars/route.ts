@@ -61,6 +61,7 @@ export async function POST(request: NextRequest) {
       description,
       features,
       images,
+      videoUrl,
       status,
       featured,
     } = body;
@@ -110,6 +111,7 @@ export async function POST(request: NextRequest) {
         description: String(description ?? ""),
         features: featuresString,
         images: imagesString,
+        videoUrl: videoUrl ? String(videoUrl) : null,
         status: String(status || "available"),
         featured: Boolean(featured),
       },

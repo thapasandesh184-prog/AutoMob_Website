@@ -33,6 +33,7 @@ model Vehicle {
   description   String   @db.Text
   features      String   @db.Text
   images        String   @db.Text
+  videoUrl      String?  @db.Text
   status        String   @default("available")
   featured      Boolean  @default(false)
   createdAt     DateTime @default(now())

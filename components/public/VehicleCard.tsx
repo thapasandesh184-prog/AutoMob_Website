@@ -113,6 +113,11 @@ export default function VehicleCard({
                   Featured
                 </Badge>
               )}
+              {vehicle.videoUrl && (
+                <Badge className="bg-blue-600 text-white hover:bg-blue-600 text-[10px] tracking-wider uppercase">
+                  Video
+                </Badge>
+              )}
             </div>
           </div>
 

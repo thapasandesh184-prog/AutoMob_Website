@@ -68,6 +68,7 @@ export async function PUT(
       description,
       features,
       images,
+      videoUrl,
       status,
       featured,
     } = body;
@@ -102,6 +103,7 @@ export async function PUT(
         ? images.join(",")
         : String(images);
     }
+    if (videoUrl !== undefined) updateData.videoUrl = videoUrl ? String(videoUrl) : null;
     if (status !== undefined) updateData.status = String(status);
     if (featured !== undefined) updateData.featured = Boolean(featured);
 

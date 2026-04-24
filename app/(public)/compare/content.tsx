@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import type { Vehicle } from "@/types";
 
 const MAX_COMPARE = 3;
-const STORAGE_KEY = "prestige_compare_ids";
+const STORAGE_KEY = "skay_compare_ids";
 
 export default function ComparePage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -220,7 +220,7 @@ export default function ComparePage() {
                   <Link href={`/inventory/${vehicle.slug}`} className="block group">
                     <div className="relative aspect-[4/3] overflow-hidden mb-3">
                       <Image
-                        src={vehicle.images[0] || "/placeholder-car.jpg"}
+                        src={vehicle.images[0] || "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800/placeholder-car.jpgq=80"}
                         alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-105"

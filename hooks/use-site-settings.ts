@@ -1,20 +1,2 @@
-import { useEffect, useState } from "react";
-
-export type SiteSettings = Record<string, string>;
-
-export function useSiteSettings() {
-  const [settings, setSettings] = useState<SiteSettings>({});
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/settings")
-      .then((res) => res.json())
-      .then((data) => {
-        setSettings(data || {});
-        setIsLoading(false);
-      })
-      .catch(() => setIsLoading(false));
-  }, []);
-
-  return { settings, isLoading };
-}
+export { useSiteSettings, SettingsProvider } from "@/components/providers/SettingsProvider";
+export type { SiteSettings } from "@/components/providers/SettingsProvider";

@@ -3,8 +3,8 @@ import Link from "next/link";
 import { ArrowRight, Calendar, Clock, Car, User } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Book an Appointment | Prestige Motors",
-  description: "Schedule a test drive, service appointment, or private viewing at Prestige Motors. Book your appointment online and experience luxury automotive service.",
+  title: "Book an Appointment | SKay Auto group",
+  description: "Schedule a test drive, service appointment, or private viewing at SKay Auto group. Book your appointment online and experience luxury automotive service.",
 };
 
 export default function BookAppointmentPage() {
@@ -44,7 +44,7 @@ export default function BookAppointmentPage() {
           <div className="bg-[#111] border border-white/5 p-8 md:p-12 text-center">
             <h2 className="text-2xl md:text-3xl font-light text-white mb-4">Ready to Book?</h2>
             <p className="text-white/60 mb-8 max-w-xl mx-auto">
-              Contact our team to schedule your appointment. We look forward to welcoming you to Prestige Motors.
+              Contact our team to schedule your appointment. We look forward to welcoming you to SKay Auto group.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
@@ -58,7 +58,7 @@ export default function BookAppointmentPage() {
                 href="tel:+17781234567"
                 className="inline-flex items-center gap-2 px-8 py-4 border border-white/20 text-white font-medium hover:border-[#C0A66A] hover:text-[#C0A66A] transition-all duration-300"
               >
-                Call +1 (778) 123-4567
+                Call +1 7789907468
               </a>
             </div>
           </div>

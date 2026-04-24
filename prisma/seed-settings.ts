@@ -2,17 +2,17 @@ import { prisma } from "../lib/prisma";
 
 const defaultSettings = [
   // General
-  { key: "siteName", value: "Prestige Motors", group: "general" },
-  { key: "siteTagline", value: "Vancouver's Premier Luxury Dealership", group: "general" },
-  { key: "phone", value: "+1 (778) 123-4567", group: "general" },
-  { key: "email", value: "info@prestigemotors.com", group: "general" },
-  { key: "address", value: "123 Luxury Lane", group: "general" },
-  { key: "city", value: "Vancouver", group: "general" },
+  { key: "siteName", value: "SKay Auto group", group: "general" },
+  { key: "siteTagline", value: "Richmond's Trusted Auto Group", group: "general" },
+  { key: "phone", value: "+1 7789907468", group: "general" },
+  { key: "email", value: "info@skayautogroup.ca", group: "general" },
+  { key: "address", value: "Parking lot, 21320 Westminster Hwy #2128", group: "general" },
+  { key: "city", value: "Richmond", group: "general" },
   { key: "state", value: "BC", group: "general" },
-  { key: "zip", value: "V6B 1A1", group: "general" },
+  { key: "zip", value: "V5W 3A3", group: "general" },
   { key: "country", value: "CA", group: "general" },
   { key: "hours", value: "Mon - Sat: 10am - 7pm", group: "general" },
-  { key: "mapEmbedUrl", value: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2602!2d-123.1207!3d49.2827", group: "general" },
+  { key: "mapEmbedUrl", value: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d26074!2d-123.084!3d49.136!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDnCsDA4JzEwLjAiTiAxMjPCsDA1JzAyLjQiVw!5e0!3m2!1sen!2sca!4v1", group: "general" },
   // Social
   { key: "facebook", value: "#", group: "social" },
   { key: "instagram", value: "#", group: "social" },
@@ -20,7 +20,7 @@ const defaultSettings = [
   { key: "youtube", value: "#", group: "social" },
   // Homepage Media
   { key: "heroVideo", value: "/videos/hero-video.mp4", group: "homepage" },
-  { key: "heroPoster", value: "/videos/hero-poster.jpg", group: "homepage" },
+  { key: "heroPoster", value: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80", group: "homepage" },
   { key: "financingBgImage", value: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1200&q=80", group: "homepage" },
   { key: "aboutImage", value: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1200&q=80", group: "homepage" },
   // Brands JSON
@@ -57,8 +57,8 @@ const defaultSettings = [
     group: "homepage",
   },
   // SEO
-  { key: "metaTitle", value: "Prestige Motors | Luxury & Exotic Car Dealership | Vancouver", group: "seo" },
-  { key: "metaDescription", value: "Discover the finest collection of luxury and exotic vehicles at Prestige Motors. Premium pre-owned cars, SUVs, and supercars with world-class service.", group: "seo" },
+  { key: "metaTitle", value: "SKay Auto group | Luxury & Exotic Car Dealership | Richmond", group: "seo" },
+  { key: "metaDescription", value: "Discover the finest collection of luxury and exotic vehicles at SKay Auto group. Premium pre-owned cars, SUVs, and supercars with world-class service.", group: "seo" },
   { key: "ogImage", value: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1200&q=80", group: "seo" },
 
 ];

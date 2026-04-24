@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+
+async function isAdmin() {
+  const session = await getServerSession(authOptions);
+  return !!session?.user?.email;
+}
 
 function generateSlug(year: number, make: string, model: string) {
   return `${year}-${make}-${model}`.toLowerCase().replace(/\s+/g, "-");
@@ -7,8 +14,12 @@ function generateSlug(year: number, make: string, model: string) {
 
 export async function GET() {
   try {
+    if (!(await isAdmin())) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const vehicles = await prisma.vehicle.findMany({
       orderBy: { createdAt: "desc" },
+      take: 1000,
     });
     return NextResponse.json(vehicles);
   } catch (error) {
@@ -22,6 +33,10 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    if (!(await isAdmin())) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
 
     const {

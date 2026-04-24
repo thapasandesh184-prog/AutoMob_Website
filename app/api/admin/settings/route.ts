@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 import { getAllSettings, setSetting, deleteSetting } from "@/lib/settings";
 
-async function isAdmin(request: NextRequest) {
-  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
-  return !!token?.email;
+async function isAdmin() {
+  const session = await getServerSession(authOptions);
+  return !!session?.user?.email;
 }
 
-export async function GET(request: NextRequest) {
-  if (!(await isAdmin(request))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export async function GET() {
   try {
+    if (!(await isAdmin())) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const settings = await getAllSettings();
     return NextResponse.json(settings);
   } catch (error) {
@@ -21,10 +22,10 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!(await isAdmin(request))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
   try {
+    if (!(await isAdmin())) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const body = await request.json();
     const { key, value, group } = body;
     if (!key || value === undefined) {
@@ -39,10 +40,10 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  if (!(await isAdmin(request))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
   try {
+    if (!(await isAdmin())) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const body = await request.json();
     if (!body || typeof body !== "object") {
       return NextResponse.json({ error: "Invalid body" }, { status: 400 });
@@ -62,10 +63,10 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  if (!(await isAdmin(request))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
   try {
+    if (!(await isAdmin())) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const { searchParams } = new URL(request.url);
     const key = searchParams.get("key");
     if (!key) {

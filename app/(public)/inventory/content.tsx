@@ -62,21 +62,25 @@ export default function InventoryPage() {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [itemsPerPage, setItemsPerPage] = useState<number>(12);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   useEffect(() => {
     fetch("/api/vehicles")
       .then((res) => res.json())
-      .then((data: Vehicle[]) => {
-        setVehicles(data);
+      .then((data: Vehicle[] | { error: string }) => {
+        setVehicles(Array.isArray(data) ? data : []);
         setIsLoading(false);
       })
-      .catch(() => setIsLoading(false));
+      .catch(() => {
+        setVehicles([]);
+        setIsLoading(false);
+      });
   }, []);
 
   // Hydrate compare from localStorage
   useEffect(() => {
     try {
-      const raw = localStorage.getItem("prestige_compare_ids");
+      const raw = localStorage.getItem("skay_compare_ids");
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed)) setCompareIds(parsed.slice(0, 3));
@@ -90,7 +94,7 @@ export default function InventoryPage() {
   // Persist compare to localStorage
   useEffect(() => {
     if (isCompareHydrated) {
-      localStorage.setItem("prestige_compare_ids", JSON.stringify(compareIds));
+      localStorage.setItem("skay_compare_ids", JSON.stringify(compareIds));
     }
   }, [compareIds, isCompareHydrated]);
 
@@ -442,12 +446,29 @@ export default function InventoryPage() {
       <section className="py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-8">
+            {/* Mobile filter toggle */}
+            <div className="lg:hidden mb-4">
+              <Button
+                variant="outline"
+                onClick={() => setShowMobileFilters((v) => !v)}
+                className="w-full border-white/10 text-white hover:border-[#C0A66A] hover:text-[#C0A66A] bg-transparent"
+              >
+                <SlidersHorizontal className="w-4 h-4 mr-2" />
+                {showMobileFilters ? "Hide Filters" : "Show Filters"}
+                {activeFilterCount > 0 && (
+                  <span className="ml-2 px-2 py-0.5 bg-[#C0A66A] text-black text-xs rounded-full">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </Button>
+            </div>
+
             {/* Sidebar Filters */}
             <motion.aside
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              className="lg:w-72 flex-shrink-0"
+              className={`lg:w-72 flex-shrink-0 ${showMobileFilters ? "block" : "hidden lg:block"}`}
             >
               <div className="lg:sticky lg:top-[120px] bg-[#111] border border-white/5 p-5 space-y-5">
                 <div className="flex items-center justify-between">

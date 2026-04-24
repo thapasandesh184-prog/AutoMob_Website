@@ -27,14 +27,14 @@ const footerLinks = {
 
 export default function Footer() {
   const { settings } = useSiteSettings();
-  const phone = settings.phone || "+1 (778) 123-4567";
-  const email = settings.email || "sales@prestigemotors.com";
-  const address = settings.address || "123 Luxury Lane";
-  const city = settings.city || "Vancouver";
+  const phone = settings.phone || "+1 7789907468";
+  const email = settings.email || "info@skayautogroup.ca";
+  const address = settings.address || "Parking lot, 21320 Westminster Hwy #2128";
+  const city = settings.city || "Richmond";
   const state = settings.state || "BC";
-  const zip = settings.zip || "V6B 1A1";
+  const zip = settings.zip || "V5W 3A3";
   const hours = settings.hours || "Mon - Sat: 10am - 7pm";
-  const siteName = settings.siteName || "Prestige Motors";
+  const siteName = settings.siteName || "SKay Auto group";
   const facebook = settings.facebook || "#";
   const instagram = settings.instagram || "#";
   const x = settings.x || "#";
@@ -50,17 +50,13 @@ export default function Footer() {
   return (
     <footer className="bg-[#0a0a0a] border-t border-white/5">
       {/* Main footer */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
           {/* Brand column */}
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-6" aria-label="Prestige Motors Home">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#C0A66A] to-[#9A854C] flex items-center justify-center">
-                <span className="text-black font-bold text-lg">P</span>
-              </div>
-              <div>
-                <span className="text-lg font-semibold tracking-tight text-white">PRESTIGE</span>
-                <span className="block -mt-1 text-[10px] tracking-[0.3em] text-[#C0A66A]">MOTORS</span>
+            <Link href="/" className="flex items-center gap-2 mb-6" aria-label="SKay Auto group Home">
+              <div className="bg-black/50 backdrop-blur-sm rounded-lg px-2 py-1">
+                <img src="/logo.png" alt="SKay Auto group" className="h-8 md:h-10 w-auto object-contain" />
               </div>
             </Link>
             <p className="text-white/50 text-sm leading-relaxed mb-6">
@@ -165,7 +161,7 @@ export default function Footer() {
                 <a
                   href={phoneHref}
                   className="text-sm text-white/50 hover:text-[#C0A66A] transition-colors"
-                  aria-label="Call Prestige Motors"
+                  aria-label="Call SKay Auto group"
                 >
                   {phone}
                 </a>
@@ -175,7 +171,7 @@ export default function Footer() {
                 <a
                   href={emailHref}
                   className="text-sm text-white/50 hover:text-[#C0A66A] transition-colors"
-                  aria-label="Email Prestige Motors"
+                  aria-label="Email SKay Auto group"
                 >
                   {email}
                 </a>

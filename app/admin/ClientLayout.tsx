@@ -45,10 +45,10 @@ function Sidebar() {
       <div className="p-6 border-b border-white/10">
         <Link href="/admin/dashboard" className="flex items-center gap-2">
           <div className="w-8 h-8 bg-gradient-to-br from-[#C0A66A] to-[#9A854C] flex items-center justify-center">
-            <span className="text-black font-bold text-sm">P</span>
+            <span className="text-black font-bold text-sm">S</span>
           </div>
           <div>
-            <span className="text-base font-semibold tracking-tight text-white">PRESTIGE</span>
+            <span className="text-base font-semibold tracking-tight text-white">SKAY</span>
             <span className="block -mt-1 text-[9px] tracking-[0.3em] text-[#C0A66A]">ADMIN</span>
           </div>
         </Link>
@@ -92,7 +92,7 @@ function MobileHeader() {
     <div className="md:hidden flex items-center justify-between p-4 bg-[#0a0a0a] border-b border-white/10 sticky top-0 z-50">
       <Link href="/admin/dashboard" className="flex items-center gap-2">
         <div className="w-8 h-8 bg-gradient-to-br from-[#C0A66A] to-[#9A854C] flex items-center justify-center">
-          <span className="text-black font-bold text-sm">P</span>
+          <span className="text-black font-bold text-sm">S</span>
         </div>
         <span className="text-sm font-semibold text-white">ADMIN</span>
       </Link>

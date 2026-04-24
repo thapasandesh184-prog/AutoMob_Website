@@ -16,25 +16,25 @@ const oswald = Oswald({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://prestigemotors.com"),
+  metadataBase: new URL("https://skayautogroup.ca"),
   title: {
-    default: "Prestige Motors | Luxury & Exotic Car Dealership",
-    template: "%s | Prestige Motors",
+    default: "SKay Auto group | Luxury & Exotic Car Dealership",
+    template: "%s | SKay Auto group",
   },
   description:
-    "Discover the finest collection of luxury and exotic vehicles at Prestige Motors. Premium pre-owned cars, SUVs, and supercars with world-class service.",
+    "Discover the finest collection of luxury and exotic vehicles at SKay Auto group. Premium pre-owned cars, SUVs, and supercars with world-class service.",
   openGraph: {
-    title: "Prestige Motors | Luxury & Exotic Car Dealership",
+    title: "SKay Auto group | Luxury & Exotic Car Dealership",
     description:
-      "Discover the finest collection of luxury and exotic vehicles at Prestige Motors. Premium pre-owned cars, SUVs, and supercars with world-class service.",
-    url: "https://prestigemotors.com",
-    siteName: "Prestige Motors",
+      "Discover the finest collection of luxury and exotic vehicles at SKay Auto group. Premium pre-owned cars, SUVs, and supercars with world-class service.",
+    url: "https://skayautogroup.ca",
+    siteName: "SKay Auto group",
     images: [
       {
         url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1200&q=80",
         width: 1200,
         height: 630,
-        alt: "Prestige Motors Showroom",
+        alt: "SKay Auto group Showroom",
       },
     ],
     locale: "en_CA",
@@ -42,13 +42,17 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Prestige Motors | Luxury & Exotic Car Dealership",
+    title: "SKay Auto group | Luxury & Exotic Car Dealership",
     description:
-      "Discover the finest collection of luxury and exotic vehicles at Prestige Motors. Premium pre-owned cars, SUVs, and supercars with world-class service.",
+      "Discover the finest collection of luxury and exotic vehicles at SKay Auto group. Premium pre-owned cars, SUVs, and supercars with world-class service.",
     images: ["https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1200&q=80"],
   },
   alternates: {
     canonical: "./",
+  },
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
   },
 };
 
@@ -71,7 +75,19 @@ export default function RootLayout({
         </a>
         {children}
         <Toaster position="top-center" richColors />
-        {/* Google Analytics placeholder removed — add back with a real tracking ID when ready */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                  for (var i = 0; i < registrations.length; i++) {
+                    registrations[i].unregister();
+                  }
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );

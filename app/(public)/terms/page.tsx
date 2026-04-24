@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Prestige Motors",
-  description: "Read the Terms of Service for Prestige Motors. Understand the terms and conditions governing your use of our website and services.",
+  title: "Terms of Service | SKay Auto group",
+  description: "Read the Terms of Service for SKay Auto group. Understand the terms and conditions governing your use of our website and services.",
 };
 
 export default function TermsPage() {
@@ -24,7 +24,7 @@ export default function TermsPage() {
           <div>
             <h2 className="text-2xl font-light text-white mb-4">Acceptance of Terms</h2>
             <p className="text-white/60 leading-relaxed">
-              By accessing and using the Prestige Motors website, you accept and agree to be bound by the terms and conditions of this agreement. If you do not agree to these terms, please do not use our website.
+              By accessing and using the SKay Auto group website, you accept and agree to be bound by the terms and conditions of this agreement. If you do not agree to these terms, please do not use our website.
             </p>
           </div>
           <div>
@@ -36,13 +36,13 @@ export default function TermsPage() {
           <div>
             <h2 className="text-2xl font-light text-white mb-4">Intellectual Property</h2>
             <p className="text-white/60 leading-relaxed">
-              All content on this website, including text, graphics, logos, images, and software, is the property of Prestige Motors and is protected by copyright and other intellectual property laws.
+              All content on this website, including text, graphics, logos, images, and software, is the property of SKay Auto group and is protected by copyright and other intellectual property laws.
             </p>
           </div>
           <div>
             <h2 className="text-2xl font-light text-white mb-4">Limitation of Liability</h2>
             <p className="text-white/60 leading-relaxed">
-              Prestige Motors shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from the use or inability to use our website or services.
+              SKay Auto group shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from the use or inability to use our website or services.
             </p>
           </div>
           <div>
@@ -50,11 +50,11 @@ export default function TermsPage() {
             <p className="text-white/60 leading-relaxed whitespace-pre-line">
               If you have any questions about these Terms of Service, please contact us at:
 
-              Prestige Motors
-              123 Luxury Lane
-              Vancouver, BC V6B 1A1
-              Email: sales@prestigemotors.com
-              Phone: +1 (778) 123-4567
+              SKay Auto group
+              Parking lot, 21320 Westminster Hwy #2128
+              Richmond, BC V5W 3A3
+              Email: info@skayautogroup.ca
+              Phone: +1 7789907468
             </p>
           </div>
         </div>

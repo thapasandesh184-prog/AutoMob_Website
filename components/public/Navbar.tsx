@@ -34,9 +34,9 @@ const navLinks = [
 export default function Navbar() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const { settings } = useSiteSettings();
-  const phone = settings.phone || "+1 (778) 123-4567";
-  const address = settings.address || "123 Luxury Lane";
-  const city = settings.city || "Vancouver";
+  const phone = settings.phone || "+1 7789907468";
+  const address = settings.address || "Parking lot, 21320 Westminster Hwy #2128";
+  const city = settings.city || "Richmond";
   const state = settings.state || "BC";
   const hours = settings.hours || "Mon - Sat: 10am - 7pm";
   const facebook = settings.facebook || "#";
@@ -48,14 +48,14 @@ export default function Navbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass">
       {/* Top bar */}
-      <div className="bg-[#111] border-b border-white/5">
+      <div className="bg-[#111] border-b border-white/5 hidden sm:block">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-10 text-xs text-white/70">
+          <div className="flex items-center justify-between h-9 text-xs text-white/70">
             <div className="flex items-center gap-4">
               <a
                 href={phoneHref}
                 className="flex items-center gap-1.5 hover:text-[#C0A66A] transition-colors"
-                aria-label="Call Prestige Motors"
+                aria-label="Call SKay Auto group"
               >
                 <Phone className="w-3 h-3" />
                 <span>{phone}</span>
@@ -64,7 +64,7 @@ export default function Navbar() {
               <a
                 href="/directions"
                 className="hidden sm:flex items-center gap-1.5 hover:text-[#C0A66A] transition-colors"
-                aria-label="Get directions to Prestige Motors"
+                aria-label="Get directions to SKay Auto group"
               >
                 <MapPin className="w-3 h-3" />
                 <span>{address}, {city}, {state}</span>
@@ -136,13 +136,9 @@ export default function Navbar() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2" aria-label="Prestige Motors Home">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#C0A66A] to-[#9A854C] flex items-center justify-center">
-              <span className="text-black font-bold text-lg">P</span>
-            </div>
-            <div className="hidden sm:block">
-              <span className="text-lg font-semibold tracking-tight text-white">PRESTIGE</span>
-              <span className="block -mt-1 text-[10px] tracking-[0.3em] text-[#C0A66A]">MOTORS</span>
+          <Link href="/" className="flex items-center gap-2" aria-label="SKay Auto group Home">
+            <div className="bg-black/50 backdrop-blur-sm rounded-lg px-2 py-1">
+              <img src="/logo.png" alt="SKay Auto group" className="h-8 md:h-10 w-auto object-contain" />
             </div>
           </Link>
 
@@ -272,7 +268,7 @@ export default function Navbar() {
                   <a
                     href={phoneHref}
                     className="flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium text-white border border-white/20 hover:border-[#C0A66A] hover:text-[#C0A66A] transition-colors"
-                    aria-label="Call Prestige Motors"
+                    aria-label="Call SKay Auto group"
                   >
                     <Phone className="w-4 h-4" />
                     Call Us

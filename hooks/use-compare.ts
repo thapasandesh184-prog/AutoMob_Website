@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-const STORAGE_KEY = "prestige_compare_ids";
+const STORAGE_KEY = "skay_compare_ids";
 const MAX_COMPARE = 3;
 
 export function useCompare() {

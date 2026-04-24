@@ -79,7 +79,7 @@ export default function VehicleCard({
             }`}
           >
             <Image
-              src={vehicle.images[0] || "/placeholder-car.jpg"}
+              src={vehicle.images[0] || "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800/placeholder-car.jpgq=80"}
               alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-110"

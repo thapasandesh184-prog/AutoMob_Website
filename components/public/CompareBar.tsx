@@ -41,7 +41,7 @@ export default function CompareBar({ vehicles, onRemove, onClear }: CompareBarPr
                 >
                   <div className="relative w-10 h-10 overflow-hidden flex-shrink-0">
                     <Image
-                      src={vehicle.images[0] || "/placeholder-car.jpg"}
+                      src={vehicle.images[0] || "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800/placeholder-car.jpgq=80"}
                       alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
                       fill
                       className="object-cover"

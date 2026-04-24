@@ -3,25 +3,25 @@ import ContactContent from "./content";
 import JsonLd from "@/components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Contact Us | Prestige Motors | Vancouver",
-  description: "Get in touch with Prestige Motors. Visit our Vancouver showroom, call us, or send a message. We're here to help you find your dream car.",
+  title: "Contact Us | SKay Auto group | Richmond",
+  description: "Get in touch with SKay Auto group. Visit our Richmond showroom, call us, or send a message. We're here to help you find your dream car.",
 };
 
 export default function ContactPage() {
   const localBusinessLd = {
     "@context": "https://schema.org",
     "@type": "AutoDealer",
-    name: "Prestige Motors",
+    name: "SKay Auto group",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "123 Luxury Lane",
-      addressLocality: "Vancouver",
+      streetAddress: "Parking lot, 21320 Westminster Hwy #2128",
+      addressLocality: "Richmond",
       addressRegion: "BC",
-      postalCode: "V6B 1A1",
+      postalCode: "V5W 3A3",
       addressCountry: "CA",
     },
-    telephone: "+1-778-123-4567",
-    url: "https://prestigemotors.com",
+    telephone: "+1 7789907468",
+    url: "https://skayautogroup.ca",
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",

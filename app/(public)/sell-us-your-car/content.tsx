@@ -550,7 +550,7 @@ export default function SellUsYourCarPage() {
       <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-light text-white">Why Sell to <span className="text-gradient-gold">Prestige Motors</span>?</h2>
+            <h2 className="text-3xl font-light text-white">Why Sell to <span className="text-gradient-gold">SKay Auto group</span>?</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {[

@@ -79,7 +79,7 @@ export default function VehicleDetailContent({ vehicle }: VehicleDetailContentPr
   // Hydrate compare from localStorage
   useEffect(() => {
     try {
-      const raw = localStorage.getItem("prestige_compare_ids");
+      const raw = localStorage.getItem("skay_compare_ids");
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed)) setCompareIds(parsed.slice(0, 3));
@@ -93,7 +93,7 @@ export default function VehicleDetailContent({ vehicle }: VehicleDetailContentPr
   // Persist compare to localStorage
   useEffect(() => {
     if (isCompareHydrated) {
-      localStorage.setItem("prestige_compare_ids", JSON.stringify(compareIds));
+      localStorage.setItem("skay_compare_ids", JSON.stringify(compareIds));
     }
   }, [compareIds, isCompareHydrated]);
 
@@ -256,7 +256,7 @@ export default function VehicleDetailContent({ vehicle }: VehicleDetailContentPr
                         <Image
                           src={
                             vehicle.images[selectedImageIndex] ||
-                            "/placeholder-car.jpg"
+                            "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800/placeholder-car.jpgq=80"
                           }
                           alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
                           fill
@@ -284,7 +284,7 @@ export default function VehicleDetailContent({ vehicle }: VehicleDetailContentPr
                   <Image
                     src={
                       vehicle.images[selectedImageIndex] ||
-                      "/placeholder-car.jpg"
+                      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800/placeholder-car.jpgq=80"
                     }
                     alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
                     fill

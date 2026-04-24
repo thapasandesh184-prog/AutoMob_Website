@@ -35,12 +35,12 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { settings } = useSiteSettings();
 
-  const phone = settings.phone || "+1 (778) 123-4567";
-  const email = settings.email || "sales@prestigemotors.com";
-  const address = settings.address || "123 Luxury Lane";
-  const city = settings.city || "Vancouver";
+  const phone = settings.phone || "+1 7789907468";
+  const email = settings.email || "info@skayautogroup.ca";
+  const address = settings.address || "Parking lot, 21320 Westminster Hwy #2128";
+  const city = settings.city || "Richmond";
   const state = settings.state || "BC";
-  const zip = settings.zip || "V6B 1A1";
+  const zip = settings.zip || "V5W 3A3";
   const hours = settings.hours || "Mon - Sat: 10am - 7pm";
   const mapEmbedUrl = getSafeMapEmbedUrl(settings.mapEmbedUrl);
 
@@ -48,7 +48,7 @@ export default function ContactPage() {
     name: "Full Name", email: "Email Address", phone: "Phone Number", subject: "Subject", message: "Message",
   };
   const contactFormPlaceholders = {
-    name: "John Doe", email: "john@example.com", phone: "(778) 123-4567", subject: "Select a subject", message: "How can we help you?",
+    name: "John Doe", email: "john@example.com", phone: "+1 7789907468", subject: "Select a subject", message: "How can we help you?",
   };
   const contactFormSubjects = [
     "General Inquiry","Vehicle Information","Financing","Trade-In","Service","Parts","Other",
@@ -366,7 +366,7 @@ export default function ContactPage() {
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Prestige Motors Location"
+                title="SKay Auto group Location"
                 className="grayscale-[30%]"
               />
             </motion.div>

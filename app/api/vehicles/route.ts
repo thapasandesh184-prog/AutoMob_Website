@@ -35,23 +35,30 @@ export async function GET(request: NextRequest) {
 
     if (minPrice !== null || maxPrice !== null) {
       where.price = {};
-      if (minPrice !== null) where.price.gte = Number(minPrice);
-      if (maxPrice !== null) where.price.lte = Number(maxPrice);
+      const minP = Number(minPrice);
+      const maxP = Number(maxPrice);
+      if (minPrice !== null && !Number.isNaN(minP)) where.price.gte = minP;
+      if (maxPrice !== null && !Number.isNaN(maxP)) where.price.lte = maxP;
     }
     if (minYear !== null || maxYear !== null) {
       where.year = {};
-      if (minYear !== null) where.year.gte = Number(minYear);
-      if (maxYear !== null) where.year.lte = Number(maxYear);
+      const minY = Number(minYear);
+      const maxY = Number(maxYear);
+      if (minYear !== null && !Number.isNaN(minY)) where.year.gte = minY;
+      if (maxYear !== null && !Number.isNaN(maxY)) where.year.lte = maxY;
     }
     if (minMileage !== null || maxMileage !== null) {
       where.mileage = {};
-      if (minMileage !== null) where.mileage.gte = Number(minMileage);
-      if (maxMileage !== null) where.mileage.lte = Number(maxMileage);
+      const minM = Number(minMileage);
+      const maxM = Number(maxMileage);
+      if (minMileage !== null && !Number.isNaN(minM)) where.mileage.gte = minM;
+      if (maxMileage !== null && !Number.isNaN(maxM)) where.mileage.lte = maxM;
     }
 
     const vehicles = await prisma.vehicle.findMany({
       where,
       orderBy: { createdAt: "desc" },
+      take: 500,
     });
 
     const parsed = vehicles.map((v) => ({
@@ -60,7 +67,11 @@ export async function GET(request: NextRequest) {
       images: v.images ? v.images.split(",") : [],
     }));
 
-    return NextResponse.json(parsed);
+    return NextResponse.json(parsed, {
+      headers: {
+        "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120",
+      },
+    });
   } catch (error) {
     console.error("Failed to fetch vehicles:", error);
     return NextResponse.json({ error: "Failed to fetch vehicles" }, { status: 500 });

@@ -1,6 +1,7 @@
 import Navbar from "@/components/public/Navbar";
 import Footer from "@/components/public/Footer";
 import MapSection from "@/components/public/MapSection";
+import { SettingsProvider } from "@/components/providers/SettingsProvider";
 
 export default function PublicLayout({
   children,
@@ -8,13 +9,13 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <SettingsProvider>
       <Navbar />
       <main id="main" className="flex-1 pt-[104px] md:pt-[120px]">
         {children}
       </main>
       <MapSection />
       <Footer />
-    </>
+    </SettingsProvider>
   );
 }

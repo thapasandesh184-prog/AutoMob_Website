@@ -396,7 +396,7 @@ export const vehicles = brands.flatMap((brand, brandIndex) =>
     const price = Math.round(m.priceBase * (0.92 + Math.random() * 0.12));
     const msrp = Math.round(price * m.msrpMult);
     const mileage = randInt(800, 32000);
-    const stockNumber = `PM-${(brandIndex * 10 + modelIndex + 1001).toString()}`;
+    const stockNumber = `SK-${(brandIndex * 10 + modelIndex + 1001).toString()}`;
     const slugBase = generateSlug(year, brand.make, m.model, m.trim || "base");
     const slug = `${slugBase}-${brandIndex}-${modelIndex}`;
     const pool = brandImagePools[brand.make];
@@ -445,15 +445,17 @@ export const vehicles = brands.flatMap((brand, brandIndex) =>
 );
 
 async function main() {
-  const hashedPassword = await bcrypt.hash("admin123", 10);
+  const adminPassword = process.env.ADMIN_PASSWORD || "admin@123";
+  const hashedPassword = await bcrypt.hash(adminPassword, 10);
   await prisma.adminUser.upsert({
-    where: { email: "admin@prestigemotors.com" },
+    where: { email: "admin@skayautogroup.ca" },
     update: {},
     create: {
-      email: "admin@prestigemotors.com",
+      email: "admin@skayautogroup.ca",
       password: hashedPassword,
     },
   });
+  console.log(`[Seed] Admin user created/updated with email: admin@skayautogroup.ca`);
 
   // Clean existing vehicles and re-seed fresh inventory
   await prisma.vehicle.deleteMany({});

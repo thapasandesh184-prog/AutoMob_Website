@@ -28,8 +28,11 @@ export default function HeroSearchSection() {
   const [maxYear, setMaxYear] = useState("");
 
   const heroVideo = settings.heroVideo || "/videos/hero-video.mp4";
-  const heroPoster = settings.heroPoster || "/videos/hero-poster.jpg";
-  const homeHeroEyebrow = "Vancouver's Premier Luxury Dealership";
+  const heroPoster =
+    settings.heroPoster && settings.heroPoster.startsWith("http")
+      ? settings.heroPoster
+      : "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80";
+  const homeHeroEyebrow = "Richmond's Trusted Auto Group";
   const homeHeroTitle = "Drive Your\nDream";
   const homeHeroSubtitle = "Discover an exclusive collection of the world's finest automobiles.";
   const homeHeroSearchBadge = "Find Your Perfect Vehicle";
@@ -38,7 +41,13 @@ export default function HeroSearchSection() {
   const homeHeroQuickLinkHover = "Explore";
   const quickLinks: QuickLink[] = useMemo(() => {
     try {
-      return JSON.parse(settings.quickLinks || "[]");
+      const parsed = JSON.parse(settings.quickLinks || "[]");
+      return Array.isArray(parsed) ? parsed : [
+        { title: "VIEW INVENTORY", href: "/inventory", image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80" },
+        { title: "APPLY FOR FINANCING", href: "/finance/application", image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&q=80" },
+        { title: "SELL YOUR VEHICLE", href: "/sell-us-your-car", image: "https://images.unsplash.com/photo-1551830820-330a71b99659?w=800&q=80" },
+        { title: "CONTACT US", href: "/contact", image: "https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=800&q=80" },
+      ];
     } catch {
       return [
         { title: "VIEW INVENTORY", href: "/inventory", image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80" },
@@ -52,7 +61,8 @@ export default function HeroSearchSection() {
   useEffect(() => {
     fetch("/api/vehicles")
       .then((res) => res.json())
-      .then((data) => setVehicles(data));
+      .then((data) => setVehicles(Array.isArray(data) ? data : []))
+      .catch(() => setVehicles([]));
   }, []);
 
   const uniqueMakes = Array.from(new Set(vehicles.map((v) => v.make))).sort();
@@ -89,7 +99,7 @@ export default function HeroSearchSection() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black" />
       </div>
 
-      <div className="relative z-10 pt-32 md:pt-40 pb-12 md:pb-16">
+      <div className="relative z-10 pt-24 md:pt-36 pb-10 md:pb-16">
         {/* Hero headline */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-10 md:mb-14">
           <motion.p
@@ -272,7 +282,7 @@ export default function HeroSearchSection() {
               >
                 <Link
                   href={link.href}
-                  className="group relative h-[220px] md:h-[280px] overflow-hidden block shadow-xl shadow-black/50 border border-white/5 hover:border-[#C0A66A]/40 transition-all duration-500"
+                  className="group relative h-[160px] sm:h-[200px] md:h-[280px] overflow-hidden block shadow-xl shadow-black/50 border border-white/5 hover:border-[#C0A66A]/40 transition-all duration-500"
                 >
                   {/* Image */}
                   <Image

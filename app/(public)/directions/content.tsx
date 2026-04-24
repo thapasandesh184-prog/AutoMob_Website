@@ -13,43 +13,43 @@ const directions = [
     title: "From Vancouver International Airport (YVR)",
     steps: [
       "Head north on Grant McConachie Way toward Airport Rd (2 km)",
-      "Merge onto SW Marine Dr E (6 km)",
-      "Continue onto W 70th Ave and then W Broadway (8 km)",
-      "Turn left onto Luxury Lane — Prestige Motors will be on your right",
+      "Take Arthur Laing Bridge N toward Richmond",
+      "Continue onto SW Marine Dr and then Oak St",
+      "Turn right onto Westminster Hwy — SKay Auto group will be on your right",
+    ],
+    time: "~20 minutes",
+  },
+  {
+    icon: "Train",
+    title: "From Downtown Vancouver",
+    steps: [
+      "Head south on Cambie St toward the Cambie St Bridge",
+      "Cross the bridge and continue onto Cambie Rd in Richmond",
+      "Turn left onto No. 3 Rd",
+      "Turn right onto Westminster Hwy — destination on your right",
     ],
     time: "~25 minutes",
   },
   {
-    icon: "Train",
-    title: "From Waterfront Station",
-    steps: [
-      "Head southeast on Howe St toward W Cordova St (1 km)",
-      "Turn left onto W Georgia St and continue for 2 km",
-      "Turn right onto Burrard St (1.5 km)",
-      "Continue straight onto Luxury Lane — destination on the left",
-    ],
-    time: "~12 minutes",
-  },
-  {
     icon: "Car",
-    title: "From Stanley Park",
+    title: "From Burnaby / Metrotown",
     steps: [
-      "Exit Stanley Park via Georgia St (2 km)",
-      "Continue on Georgia St toward downtown (1.5 km)",
-      "Turn left onto Burrard St and proceed south (2 km)",
-      "Turn right onto Luxury Lane — showroom ahead on the left",
+      "Head south on Willingdon Ave",
+      "Merge onto Hwy 91 S toward Richmond",
+      "Take the Westminster Hwy exit",
+      "Turn right onto Westminster Hwy — showroom ahead on your right",
     ],
-    time: "~15 minutes",
+    time: "~20 minutes",
   },
 ];
 
 export default function DirectionsPage() {
   const { settings } = useSiteSettings();
-  const siteName = settings.siteName || "Prestige Motors";
-  const address = settings.address || "123 Luxury Lane";
-  const city = settings.city || "Vancouver";
+  const siteName = settings.siteName || "SKay Auto group";
+  const address = settings.address || "Parking lot, 21320 Westminster Hwy #2128";
+  const city = settings.city || "Richmond";
   const state = settings.state || "BC";
-  const zip = settings.zip || "V6B 1A1";
+  const zip = settings.zip || "V5W 3A3";
   const country = settings.country || "Canada";
   const hours = settings.hours || "Mon - Sat: 10am - 7pm";
   const fullAddress = `${address}, ${city}, ${state} ${zip}`;
@@ -94,7 +94,7 @@ export default function DirectionsPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-white/60 text-lg max-w-2xl mx-auto font-light"
           >
-            Located in the heart of Vancouver, our showroom is easily accessible from all major landmarks.
+            Located in Richmond, our showroom is easily accessible from all major landmarks across Metro Vancouver.
           </motion.p>
         </div>
       </section>
@@ -159,7 +159,7 @@ export default function DirectionsPage() {
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Prestige Motors Location"
+                title="SKay Auto group Location"
                 className="grayscale-[30%]"
               />
             </motion.div>

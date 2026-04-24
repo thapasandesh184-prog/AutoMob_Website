@@ -9,28 +9,28 @@ const team = [
     title: "Sales Manager",
     bio: "With over 15 years in luxury automotive sales, James ensures every client drives away with the perfect vehicle.",
     image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&q=80",
-    email: "james@prestigemotors.com",
+    email: "james@skayautogroup.ca",
   },
   {
     name: "Sarah Chen",
     title: "Finance Director",
     bio: "Sarah crafts tailored financing solutions, making luxury ownership accessible and straightforward.",
     image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&q=80",
-    email: "sarah@prestigemotors.com",
+    email: "sarah@skayautogroup.ca",
   },
   {
     name: "Marcus Rodriguez",
     title: "Service Advisor",
     bio: "Marcus oversees our service department with a passion for keeping every vehicle in peak condition.",
     image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&q=80",
-    email: "marcus@prestigemotors.com",
+    email: "marcus@skayautogroup.ca",
   },
   {
     name: "Emily Watson",
     title: "General Manager",
-    bio: "Emily leads Prestige Motors with a commitment to excellence and an unmatched customer-first approach.",
+    bio: "Emily leads SKay Auto group with a commitment to excellence and an unmatched customer-first approach.",
     image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&q=80",
-    email: "emily@prestigemotors.com",
+    email: "emily@skayautogroup.ca",
   },
 ];
 
@@ -44,7 +44,7 @@ export default function TeamContent() {
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-[#C0A66A] text-sm md:text-base tracking-[0.3em] uppercase mb-4">
-            The People Behind Prestige
+            The People Behind SKay
           </p>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-light text-white mb-4">
             Meet Our <span className="text-gradient-gold font-medium">Team</span>

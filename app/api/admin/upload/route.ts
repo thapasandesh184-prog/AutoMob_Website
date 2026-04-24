@@ -1,9 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { uploadToCloudinary } from "@/lib/cloudinary";
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
+async function isAdmin() {
+  const session = await getServerSession(authOptions);
+  return !!session?.user?.email;
+}
 
 export async function POST(request: NextRequest) {
   try {
+    if (!(await isAdmin())) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const contentLength = request.headers.get("content-length");
+    if (contentLength && Number(contentLength) > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: "File too large. Max 10 MB." },
+        { status: 413 }
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get("image");
 
@@ -14,18 +34,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: "File too large. Max 10 MB." },
+        { status: 413 }
+      );
+    }
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+    const url = await uploadToCloudinary(buffer, "admin-uploads");
 
-    const ext = path.extname(file.name) || ".png";
-    const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`;
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    const filepath = path.join(uploadsDir, filename);
-
-    await mkdir(uploadsDir, { recursive: true });
-    await writeFile(filepath, buffer);
-
-    return NextResponse.json({ url: `/uploads/${filename}` });
+    return NextResponse.json({ url });
   } catch (error) {
     console.error("Failed to upload image:", error);
     return NextResponse.json(

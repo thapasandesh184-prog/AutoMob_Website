@@ -29,7 +29,7 @@ const sections = [
   },
   {
     title: "Contact Us",
-    content: `If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at:\n\nPrestige Motors\n123 Luxury Lane\nVancouver, BC V6B 1A1\nEmail: sales@prestigemotors.com\nPhone: +1 (778) 123-4567`,
+    content: `If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at:\n\nSKay Auto group\nParking lot, 21320 Westminster Hwy #2128\nRichmond, BC V5W 3A3\nEmail: info@skayautogroup.ca\nPhone: +1 7789907468`,
   },
 ];
 

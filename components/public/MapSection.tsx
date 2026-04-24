@@ -7,19 +7,19 @@ import { getSafeMapEmbedUrl } from "@/lib/utils";
 
 export default function MapSection() {
   const { settings } = useSiteSettings();
-  const phone = settings.phone || "+1 (778) 123-4567";
-  const address = settings.address || "123 Luxury Lane";
-  const city = settings.city || "Vancouver";
+  const phone = settings.phone || "+1 7789907468";
+  const address = settings.address || "Parking lot, 21320 Westminster Hwy #2128";
+  const city = settings.city || "Richmond";
   const state = settings.state || "BC";
-  const zip = settings.zip || "V6B 1A1";
-  const siteName = settings.siteName || "Prestige Motors";
+  const zip = settings.zip || "V5W 3A3";
+  const siteName = settings.siteName || "SKay Auto group";
   const fullAddress = `${address}, ${city}, ${state} ${zip}`;
   const mapEmbedUrl = getSafeMapEmbedUrl(settings.mapEmbedUrl);
   const phoneHref = `tel:${phone.replace(/\s+/g, "")}`;
   const mapsHref = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress)}`;
   const mapSectionEyebrow = "Visit Our Showroom";
   const mapSectionTitle = "Find Us Here";
-  const mapSectionBody = "Experience our curated collection of world-class automobiles in person at our premier Vancouver showroom.";
+  const mapSectionBody = "Experience our curated collection of world-class automobiles in person at our premier Richmond showroom.";
   const mapSectionLiveBadge = "Live";
   const mapSectionDirectionsTitle = "Get Directions";
   const mapSectionDirectionsSubtitle = "Open in Google Maps";
@@ -110,7 +110,7 @@ export default function MapSection() {
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="Prestige Motors Showroom Location"
+                  title="SKay Auto group Showroom Location"
                   className="absolute inset-0 grayscale-[20%] contrast-[1.05]"
                 />
 

@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://prestigemotors.com/sitemap.xml",
+    sitemap: "https://skayautogroup.ca/sitemap.xml",
   };
 }

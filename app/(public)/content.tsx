@@ -53,9 +53,9 @@ const homeFinanceApprovalValue = "24h";
 const homeFinanceApprovalLabel = "Approval Time";
 const homeFinancePrimaryCta = "Apply For Financing";
 const homeFinanceSecondaryCta = "Contact Us";
-const homeAboutEyebrow = "About Prestige Motors";
+const homeAboutEyebrow = "About SKay Auto group";
 const homeAboutTitle = "A Legacy of Excellence";
-const homeAboutBody = "For over 15 years, Prestige Motors has been the destination of choice for discerning automotive enthusiasts. We don't just sell cars — we curate experiences and build lifelong relationships.";
+const homeAboutBody = "For over 15 years, SKay Auto group has been the destination of choice for discerning automotive enthusiasts. We don't just sell cars — we curate experiences and build lifelong relationships.";
 const homeAboutCta = "Learn More About Us";
 
 export default function HomePage() {
@@ -65,7 +65,8 @@ export default function HomePage() {
 
   let brands: Brand[] = [];
   try {
-    brands = JSON.parse(settings.brands || "[]");
+    const parsed = JSON.parse(settings.brands || "[]");
+    brands = Array.isArray(parsed) ? parsed : [];
   } catch {
     brands = [];
   }
@@ -76,8 +77,14 @@ export default function HomePage() {
   useEffect(() => {
     fetch("/api/vehicles?featured=true")
       .then((res) => res.json())
-      .then((data) => { setFeaturedVehicles(data); setIsLoading(false); })
-      .catch(() => setIsLoading(false));
+      .then((data) => {
+        setFeaturedVehicles(Array.isArray(data) ? data : []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setFeaturedVehicles([]);
+        setIsLoading(false);
+      });
   }, []);
 
   return (
@@ -172,7 +179,7 @@ export default function HomePage() {
               viewport={{ once: true }}
               className="text-[#C0A66A] text-sm tracking-[0.2em] uppercase mb-3"
             >
-              The Prestige Difference
+              The SKay Difference
             </motion.p>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -316,7 +323,7 @@ export default function HomePage() {
             >
               <Image
                 src={aboutImage}
-                alt="Prestige Motors Showroom"
+                alt="SKay Auto group Showroom"
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"

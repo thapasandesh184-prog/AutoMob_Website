@@ -281,7 +281,7 @@ export default function FinanceApplicationContent() {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="phone" className="text-white/80">Phone</Label>
-                        <Input id="phone" type="tel" placeholder="(778) 123-4567" className="bg-[#0a0a0a] border-white/10 text-white" {...register("phone")} />
+                        <Input id="phone" type="tel" placeholder="+1 7789907468" className="bg-[#0a0a0a] border-white/10 text-white" {...register("phone")} />
                         {errors.phone && <p className="text-sm text-red-400">{errors.phone.message}</p>}
                       </div>
                       <div className="space-y-2">
@@ -293,12 +293,12 @@ export default function FinanceApplicationContent() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="street" className="text-white/80">Street Address</Label>
-                        <Input id="street" placeholder="123 Luxury Lane" className="bg-[#0a0a0a] border-white/10 text-white" {...register("street")} />
+                        <Input id="street" placeholder="Parking lot, 21320 Westminster Hwy #2128" className="bg-[#0a0a0a] border-white/10 text-white" {...register("street")} />
                         {errors.street && <p className="text-sm text-red-400">{errors.street.message}</p>}
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="city" className="text-white/80">City</Label>
-                        <Input id="city" placeholder="Vancouver" className="bg-[#0a0a0a] border-white/10 text-white" {...register("city")} />
+                        <Input id="city" placeholder="Richmond" className="bg-[#0a0a0a] border-white/10 text-white" {...register("city")} />
                         {errors.city && <p className="text-sm text-red-400">{errors.city.message}</p>}
                       </div>
                       <div className="space-y-2">
@@ -308,7 +308,7 @@ export default function FinanceApplicationContent() {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="zip" className="text-white/80">Postal / ZIP Code</Label>
-                        <Input id="zip" placeholder="V6B 1A1" className="bg-[#0a0a0a] border-white/10 text-white" {...register("zip")} />
+                        <Input id="zip" placeholder="V5W 3A3" className="bg-[#0a0a0a] border-white/10 text-white" {...register("zip")} />
                         {errors.zip && <p className="text-sm text-red-400">{errors.zip.message}</p>}
                       </div>
                     </div>

@@ -1,6 +1,6 @@
 # Deployment Guide
 
-## Prestige Motors — Full-Stack Next.js Application
+## SKay Auto group — Full-Stack Next.js Application
 
 This guide covers deploying the website to GoDaddy (or any Node.js-capable host).
 
@@ -26,7 +26,7 @@ Visit `http://localhost:3000`
 
 **Admin Login:**
 - URL: `http://localhost:3000/admin/login`
-- Email: `admin@prestigemotors.com`
+- Email: `admin@skayautogroup.ca`
 - Password: `admin123`
 
 ---

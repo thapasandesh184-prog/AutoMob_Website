@@ -8,12 +8,12 @@ import { ArrowRight, Shield, Users, Gem, Target } from "lucide-react";
 const iconMap: Record<string, React.ElementType> = { Shield, Users, Gem, Target };
 
 const aboutHeroEyebrow = "Our Story";
-const aboutHeroTitle = "About Prestige Motors";
+const aboutHeroTitle = "About SKay Auto group";
 const aboutHeroSubtitle = "Curating exceptional automobiles and unforgettable experiences for over 15 years.";
 const aboutStoryEyebrow = "Established 2008";
 const aboutStoryTitle = "A Legacy of Excellence";
 const storyParagraphs = [
-  "Prestige Motors was founded with a singular vision: to create a dealership experience worthy of the extraordinary vehicles we sell. What began as a small showroom in downtown Vancouver has grown into one of Canada's most respected luxury automotive destinations.",
+  "SKay Auto group was founded with a singular vision: to create a dealership experience worthy of the extraordinary vehicles we sell. What began as a small showroom in Metro Vancouver has grown into one of Canada's most respected automotive destinations.",
   "Our team consists of passionate automotive experts who understand that purchasing a luxury vehicle is about more than transportation — it's about lifestyle, passion, and the pursuit of perfection.",
   "Every car in our collection is hand-selected, rigorously inspected, and presented with the transparency and professionalism our clients deserve.",
 ];
@@ -22,7 +22,7 @@ const aboutValuesTitle = "Our Core Values";
 const values = [
   { icon: "Shield", title: "Integrity", description: "We believe in complete transparency. Every vehicle comes with full history reports and honest pricing with no hidden fees." },
   { icon: "Users", title: "Client First", description: "Your satisfaction is our priority. Our team takes time to understand your needs and guide you to the perfect vehicle." },
-  { icon: "Gem", title: "Excellence", description: "We only accept the finest automobiles into our collection. Quality is never compromised at Prestige Motors." },
+  { icon: "Gem", title: "Excellence", description: "We only accept the finest automobiles into our collection. Quality is never compromised at SKay Auto group." },
   { icon: "Target", title: "Precision", description: "From detailed inspections to seamless deliveries, every step of our process is executed with meticulous attention." },
 ];
 const aboutGalleryEyebrow = "The Experience";
@@ -48,7 +48,7 @@ export default function AboutPage() {
         <div className="absolute inset-0">
           <Image
             src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1600&q=80"
-            alt="About Prestige Motors"
+            alt="About SKay Auto group"
             fill
             className="object-cover"
             priority

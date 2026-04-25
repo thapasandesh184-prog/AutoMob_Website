@@ -19,11 +19,16 @@ router.post('/contact', async (req, res) => {
 // POST /api/finance
 router.post('/finance', async (req, res) => {
   try {
-    const data = req.body;
+    const body = req.body;
+    const data = {
+      ...body,
+      income: body.income ? parseFloat(body.income) : null,
+    };
     const application = await prisma.financeApplication.create({ data });
     res.status(201).json({ success: true, id: application.id });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to save application' });
+    console.error('Finance error:', err.message);
+    res.status(500).json({ error: 'Failed to save application', detail: err.message });
   }
 });
 
@@ -54,11 +59,31 @@ router.post('/appointments', async (req, res) => {
 // POST /api/car-finder
 router.post('/car-finder', async (req, res) => {
   try {
-    const data = req.body;
+    const body = req.body;
+    const data = {
+      name: body.name,
+      email: body.email,
+      phone: body.phone || null,
+      make: body.make || null,
+      model: body.model || null,
+      minYear: body.minYear ? parseInt(body.minYear, 10) : null,
+      maxYear: body.maxYear ? parseInt(body.maxYear, 10) : null,
+      minPrice: body.minPrice ? parseFloat(body.minPrice) : null,
+      maxPrice: body.maxPrice ? parseFloat(body.maxPrice) : null,
+      bodyStyle: body.bodyStyle || null,
+      transmission: body.transmission || null,
+      fuelType: body.fuelType || null,
+      driveType: body.driveType || null,
+      color: body.color || null,
+      maxMileage: body.maxMileage ? parseInt(body.maxMileage, 10) : null,
+      features: body.features ? JSON.stringify(body.features) : null,
+      notes: body.notes || null,
+    };
     const request = await prisma.carFinderRequest.create({ data });
     res.status(201).json({ success: true, id: request.id });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to save request' });
+    console.error('Car finder error:', err.message);
+    res.status(500).json({ error: 'Failed to save request', detail: err.message });
   }
 });
 

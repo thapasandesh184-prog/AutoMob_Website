@@ -2,7 +2,7 @@
 node_modules/
 
 # Build output
-dist/
+# dist/  -- temporarily included for Hostinger deployment
 
 # Environment variables
 .env

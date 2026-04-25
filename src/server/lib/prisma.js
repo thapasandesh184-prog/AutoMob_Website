@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { withAccelerate } from '@prisma/extension-accelerate';
 
 const globalForPrisma = global;
 
@@ -10,11 +11,19 @@ const prismaOptions = {
   log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
 };
 
-export const prisma = globalForPrisma.prisma || new PrismaClient(prismaOptions);
+let prisma = globalForPrisma.prisma || new PrismaClient(prismaOptions);
+
+// Use Prisma Accelerate when DATABASE_URL starts with prisma://
+if (process.env.DATABASE_URL?.startsWith('prisma://')) {
+  prisma = prisma.$extends(withAccelerate());
+  console.log('[PRISMA] Using Prisma Accelerate');
+}
 
 if (process.env.NODE_ENV !== 'production' || !globalForPrisma.prisma) {
   globalForPrisma.prisma = prisma;
 }
+
+export { prisma };
 
 process.on('beforeExit', async () => {
   try { await prisma.$disconnect(); } catch {}

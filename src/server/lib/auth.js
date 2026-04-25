@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import { prisma } from './prisma.js';
+import { queryOne } from './db.js';
 
 const JWT_SECRET = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET;
 
@@ -25,7 +25,7 @@ export function verifyToken(token) {
 }
 
 export async function authenticateUser(email, password) {
-  const user = await prisma.adminUser.findUnique({ where: { email } });
+  const user = await queryOne('SELECT * FROM AdminUser WHERE email = ?', [email]);
   if (!user) return null;
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) return null;

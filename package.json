@@ -10,14 +10,9 @@
     "build": "vite build && npm run server:build",
     "server:build": "echo 'Server is JS, no build needed'",
     "start": "NODE_ENV=production node server.js",
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:seed": "node prisma/seed.js",
-    "postinstall": "prisma generate",
     "lint": "echo 'No linter configured'"
   },
   "dependencies": {
-    "@prisma/client": "^5.1.1",
     "@xterm/xterm": "^6.0.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.5.1",
@@ -30,7 +25,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.460.0",
     "multer": "^1.4.5-lts.1",
-    "prisma": "^5.1.1",
+    "mysql2": "^3.22.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-helmet-async": "^2.0.5",

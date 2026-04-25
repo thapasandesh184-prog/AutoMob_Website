@@ -1,9 +1,8 @@
 import { Router } from 'express';
-import { prisma } from '../lib/prisma.js';
+import { query, queryOne } from '../lib/db.js';
 
 const router = Router();
 
-// GET /api/vehicles - list with filters
 router.get('/', async (req, res) => {
   try {
     const {
@@ -12,42 +11,30 @@ router.get('/', async (req, res) => {
       minPrice, maxPrice, minYear, maxYear, minMileage, maxMileage,
     } = req.query;
 
-    const where = {};
-    if (featured === 'true') where.featured = true;
-    if (make) where.make = { contains: make };
-    if (model) where.model = { contains: model };
-    if (trim) where.trim = { contains: trim };
-    if (bodyStyle) where.bodyStyle = { contains: bodyStyle };
-    if (transmission) where.transmission = { contains: transmission };
-    if (fuelType) where.fuelType = { contains: fuelType };
-    if (driveType) where.driveType = { contains: driveType };
-    if (exteriorColor) where.exteriorColor = { contains: exteriorColor };
-    if (status) where.status = status;
+    let where = 'WHERE status = ?';
+    const params = [status];
 
-    if (minPrice || maxPrice) {
-      where.price = {};
-      if (minPrice) where.price.gte = Number(minPrice);
-      if (maxPrice) where.price.lte = Number(maxPrice);
-    }
-    if (minYear || maxYear) {
-      where.year = {};
-      if (minYear) where.year.gte = Number(minYear);
-      if (maxYear) where.year.lte = Number(maxYear);
-    }
-    if (minMileage || maxMileage) {
-      where.mileage = {};
-      if (minMileage) where.mileage.gte = Number(minMileage);
-      if (maxMileage) where.mileage.lte = Number(maxMileage);
-    }
+    if (featured === 'true') { where += ' AND featured = 1'; }
+    if (make) { where += ' AND make LIKE ?'; params.push(`%${make}%`); }
+    if (model) { where += ' AND model LIKE ?'; params.push(`%${model}%`); }
+    if (trim) { where += ' AND trim LIKE ?'; params.push(`%${trim}%`); }
+    if (bodyStyle) { where += ' AND bodyStyle LIKE ?'; params.push(`%${bodyStyle}%`); }
+    if (transmission) { where += ' AND transmission LIKE ?'; params.push(`%${transmission}%`); }
+    if (fuelType) { where += ' AND fuelType LIKE ?'; params.push(`%${fuelType}%`); }
+    if (driveType) { where += ' AND driveType LIKE ?'; params.push(`%${driveType}%`); }
+    if (exteriorColor) { where += ' AND exteriorColor LIKE ?'; params.push(`%${exteriorColor}%`); }
+    if (minPrice) { where += ' AND price >= ?'; params.push(Number(minPrice)); }
+    if (maxPrice) { where += ' AND price <= ?'; params.push(Number(maxPrice)); }
+    if (minYear) { where += ' AND year >= ?'; params.push(Number(minYear)); }
+    if (maxYear) { where += ' AND year <= ?'; params.push(Number(maxYear)); }
+    if (minMileage) { where += ' AND mileage >= ?'; params.push(Number(minMileage)); }
+    if (maxMileage) { where += ' AND mileage <= ?'; params.push(Number(maxMileage)); }
 
-    const vehicles = await prisma.vehicle.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      take: 500,
-    });
+    const vehicles = await query(`SELECT * FROM Vehicle ${where} ORDER BY createdAt DESC LIMIT 500`, params);
 
     const parsed = vehicles.map(v => ({
       ...v,
+      featured: v.featured === 1,
       features: v.features ? v.features.split(',') : [],
       images: v.images ? v.images.split(',') : [],
     }));
@@ -59,16 +46,14 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/vehicles/:slug - single vehicle
 router.get('/:slug', async (req, res) => {
   try {
-    const vehicle = await prisma.vehicle.findUnique({
-      where: { slug: req.params.slug },
-    });
+    const vehicle = await queryOne('SELECT * FROM Vehicle WHERE slug = ?', [req.params.slug]);
     if (!vehicle) return res.status(404).json({ error: 'Vehicle not found' });
 
     res.json({
       ...vehicle,
+      featured: vehicle.featured === 1,
       features: vehicle.features ? vehicle.features.split(',') : [],
       images: vehicle.images ? vehicle.images.split(',') : [],
     });

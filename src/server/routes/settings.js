@@ -1,12 +1,11 @@
 import { Router } from 'express';
-import { prisma } from '../lib/prisma.js';
+import { query, queryOne } from '../lib/db.js';
 
 const router = Router();
 
-// GET /api/settings - all settings
 router.get('/', async (req, res) => {
   try {
-    const settings = await prisma.siteSetting.findMany();
+    const settings = await query('SELECT `key`, `value` FROM SiteSetting');
     const mapped = Object.fromEntries(settings.map(s => [s.key, s.value]));
     res.json(mapped);
   } catch (err) {
@@ -14,12 +13,9 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/settings/:key
 router.get('/:key', async (req, res) => {
   try {
-    const setting = await prisma.siteSetting.findUnique({
-      where: { key: req.params.key },
-    });
+    const setting = await queryOne('SELECT `value` FROM SiteSetting WHERE `key` = ?', [req.params.key]);
     res.json({ value: setting?.value ?? '' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch setting' });

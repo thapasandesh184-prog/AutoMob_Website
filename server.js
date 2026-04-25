@@ -84,11 +84,10 @@ Sitemap: https://skayautogroup.ca/sitemap.xml
 // ─── SITEMAP.XML ───
 app.get('/sitemap.xml', async (req, res) => {
   try {
-    const { prisma } = await import('./src/server/lib/prisma.js');
-    const vehicles = await prisma.vehicle.findMany({
-      where: { status: 'available' },
-      select: { slug: true, updatedAt: true },
-    });
+    const { query } = await import('./src/server/lib/db.js');
+    const vehicles = await query(
+      "SELECT slug, updatedAt FROM Vehicle WHERE status = 'available'"
+    );
 
     const staticPages = [
       { url: '', priority: '1.0', changefreq: 'daily' },
@@ -110,7 +109,7 @@ app.get('/sitemap.xml', async (req, res) => {
       url: `/inventory/${v.slug}`,
       priority: '0.8',
       changefreq: 'weekly',
-      lastmod: v.updatedAt.toISOString().split('T')[0],
+      lastmod: v.updatedAt ? new Date(v.updatedAt).toISOString().split('T')[0] : '',
     }));
 
     const allPages = [...staticPages, ...vehiclePages];
@@ -165,13 +164,13 @@ app.post('/api/admin/upload', upload.single('image'), async (req, res) => {
   }
 });
 
-// ─── SETUP ENDPOINTS (no DB required for check) ───
+// ─── SETUP ENDPOINTS ───
 app.get('/api/setup/check', async (req, res) => {
   try {
-    const { prisma } = await import('./src/server/lib/prisma.js');
-    const vehicles = await prisma.vehicle.count();
-    const admins = await prisma.adminUser.count();
-    res.json({ initialized: true, vehicles, admins });
+    const { queryOne } = await import('./src/server/lib/db.js');
+    const v = await queryOne('SELECT COUNT(*) as count FROM Vehicle');
+    const a = await queryOne('SELECT COUNT(*) as count FROM AdminUser');
+    res.json({ initialized: true, vehicles: v?.count || 0, admins: a?.count || 0 });
   } catch (err) {
     res.json({ initialized: false, error: err.message });
   }
@@ -207,7 +206,7 @@ app.post('/api/setup/seed', async (req, res) => {
     return res.status(403).json({ error: 'Invalid setup secret' });
   }
   try {
-    const { prisma } = await import('./src/server/lib/prisma.js');
+    const { queryOne, insert, generateId } = await import('./src/server/lib/db.js');
     const defaults = [
       { key: 'phone', value: '+1 7789907468', group: 'contact' },
       { key: 'email', value: 'info@skayautogroup.ca', group: 'contact' },
@@ -221,11 +220,13 @@ app.post('/api/setup/seed', async (req, res) => {
       { key: 'quickLinks', value: '[]', group: 'general' },
     ];
     for (const s of defaults) {
-      await prisma.siteSetting.upsert({
-        where: { key: s.key },
-        update: { value: s.value },
-        create: s,
-      });
+      const existing = await queryOne('SELECT id FROM SiteSetting WHERE `key` = ?', [s.key]);
+      if (existing) {
+        await import('./src/server/lib/db.js').then(m => m.query('UPDATE SiteSetting SET `value` = ?, updatedAt = NOW() WHERE `key` = ?', [s.value, s.key]));
+      } else {
+        const id = generateId();
+        await insert('INSERT INTO SiteSetting (id, `key`, `value`, `group`) VALUES (?, ?, ?, ?)', [id, s.key, s.value, s.group]);
+      }
     }
     res.json({ success: true, message: 'Default settings seeded' });
   } catch (err) {
@@ -252,17 +253,16 @@ app.listen(PORT, () => {
 
 // ─── LOAD API ROUTES IN BACKGROUND ───
 (async () => {
-  let prisma = null;
+  let dbConnected = false;
   try {
-    const prismaMod = await import('./src/server/lib/prisma.js');
-    prisma = prismaMod.prisma;
-    logStartup('[PRISMA] Module loaded');
-    if (process.env.DATABASE_URL) {
-      await prisma.$connect();
-      logStartup('[PRISMA] Database connected successfully');
-    }
+    const { pool } = await import('./src/server/lib/db.js');
+    const conn = await pool.getConnection();
+    await conn.query('SELECT 1 as test');
+    conn.release();
+    dbConnected = true;
+    logStartup('[DB] MySQL pool connected successfully');
   } catch (err) {
-    logStartup(`[PRISMA] Failed to load/connect: ${err.message}`);
+    logStartup(`[DB] Failed to connect: ${err.message}`);
   }
 
   const routes = [
@@ -284,13 +284,13 @@ app.listen(PORT, () => {
     }
   }
 
-  if (prisma) {
+  if (dbConnected) {
     app.get('/api/health/db', async (req, res) => {
       try {
-        await prisma.$queryRaw`SELECT 1 as test`;
-        const vehicles = await prisma.vehicle.count();
-        const admins = await prisma.adminUser.count();
-        res.json({ status: 'ok', db: 'connected', vehicles, admins });
+        const { queryOne } = await import('./src/server/lib/db.js');
+        const v = await queryOne('SELECT COUNT(*) as count FROM Vehicle');
+        const a = await queryOne('SELECT COUNT(*) as count FROM AdminUser');
+        res.json({ status: 'ok', db: 'connected', vehicles: v?.count || 0, admins: a?.count || 0 });
       } catch (err) {
         res.status(500).json({ status: 'error', message: err.message });
       }
@@ -298,5 +298,5 @@ app.listen(PORT, () => {
   }
 
   apiRoutesReady = true;
-  logStartup('[INIT] Server fully initialized');
+  logStartup(`[INIT] Server fully initialized (DB: ${dbConnected ? 'HEALTHY' : 'UNAVAILABLE'})`);
 })();

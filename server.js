@@ -164,6 +164,24 @@ app.post('/api/admin/upload', upload.single('image'), async (req, res) => {
   }
 });
 
+// Public upload endpoint for forms (sell-your-car, trade-in)
+app.post('/api/upload', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file provided' });
+    const fileBuffer = fs.readFileSync(req.file.path);
+    const isVideo = req.file.mimetype.startsWith('video/');
+    const result = await uploadToCloudinary(fileBuffer, {
+      folder: 'skay-auto-group/public',
+      resource_type: isVideo ? 'video' : 'image',
+    });
+    try { fs.unlinkSync(req.file.path); } catch {}
+    res.json({ url: result.secure_url, public_id: result.public_id });
+  } catch (err) {
+    console.error('Public upload error:', err);
+    res.status(500).json({ error: 'Upload failed', detail: err.message });
+  }
+});
+
 // ─── SETUP ENDPOINTS ───
 app.get('/api/setup/check', async (req, res) => {
   try {

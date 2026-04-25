@@ -49,7 +49,7 @@ router.post('/trade-in', async (req, res) => {
     const id = generateId();
     await insert(
       `INSERT INTO TradeInSubmission (id, firstName, lastName, email, phone, year, make, model, trim,
-       vin, mileage, color, transmission, condition, mechanical, exterior, interior, hasLoan,
+       vin, mileage, color, transmission, \`condition\`, mechanical, exterior, interior, hasLoan,
        payoffAmount, photos, videos)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [

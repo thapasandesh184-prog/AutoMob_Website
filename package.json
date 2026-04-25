@@ -13,6 +13,7 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.js",
+    "postinstall": "prisma generate",
     "lint": "echo 'No linter configured'"
   },
   "dependencies": {

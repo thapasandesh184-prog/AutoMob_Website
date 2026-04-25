@@ -133,6 +133,39 @@ ${allPages.map(p => `  <url>
   }
 });
 
+// ─── UPLOAD (mounted immediately — no DB needed) ───
+import multer from 'multer';
+import path from 'path';
+import { uploadToCloudinary } from './src/server/lib/cloudinary.js';
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: '/tmp',
+    filename: (req, file, cb) => {
+      const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      cb(null, unique + path.extname(file.originalname));
+    },
+  }),
+  limits: { fileSize: 500 * 1024 * 1024 },
+});
+
+app.post('/api/admin/upload', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file provided' });
+    const fileBuffer = fs.readFileSync(req.file.path);
+    const isVideo = req.file.mimetype.startsWith('video/');
+    const result = await uploadToCloudinary(fileBuffer, {
+      folder: 'skay-auto-group/admin',
+      resource_type: isVideo ? 'video' : 'image',
+    });
+    try { fs.unlinkSync(req.file.path); } catch {}
+    res.json({ url: result.secure_url, public_id: result.public_id });
+  } catch (err) {
+    console.error('Upload error:', err);
+    res.status(500).json({ error: 'Upload failed', detail: err.message });
+  }
+});
+
 // ─── SETUP ENDPOINTS (no DB required for check) ───
 app.get('/api/setup/check', async (req, res) => {
   try {

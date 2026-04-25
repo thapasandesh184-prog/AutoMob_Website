@@ -1,23 +1,8 @@
 import { Router } from 'express';
-import multer from 'multer';
-import path from 'path';
 import { prisma } from '../lib/prisma.js';
 import { requireAuth, hashPassword } from '../lib/auth.js';
-import { uploadToCloudinary } from '../lib/cloudinary.js';
 
 const router = Router();
-
-// Use disk storage for large files (videos can be 500MB+)
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: '/tmp',
-    filename: (req, file, cb) => {
-      const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      cb(null, unique + path.extname(file.originalname));
-    },
-  }),
-  limits: { fileSize: 500 * 1024 * 1024 }, // 500MB max
-});
 
 // All routes require auth
 router.use(requireAuth);
@@ -188,32 +173,6 @@ router.delete('/settings/:key', async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete setting' });
-  }
-});
-
-// POST /api/admin/upload - upload image or video to Cloudinary
-router.post('/upload', upload.single('image'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file provided' });
-    }
-
-    const fs = await import('fs');
-    const fileBuffer = fs.readFileSync(req.file.path);
-    const isVideo = req.file.mimetype.startsWith('video/');
-
-    const result = await uploadToCloudinary(fileBuffer, {
-      folder: 'skay-auto-group/admin',
-      resource_type: isVideo ? 'video' : 'image',
-    });
-
-    // Clean up temp file
-    try { fs.unlinkSync(req.file.path); } catch {}
-
-    res.json({ url: result.secure_url, public_id: result.public_id });
-  } catch (err) {
-    console.error('Upload error:', err);
-    res.status(500).json({ error: 'Upload failed', detail: err.message });
   }
 });
 

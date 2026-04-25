@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Shield, Users, Gem, Target } from 'lucide-react';
+import SEO, { localBusinessSchema } from '@/components/SEO';
 
 const iconMap = { Shield, Users, Gem, Target };
 
@@ -26,7 +27,15 @@ const galleryImages = [
 
 export default function About() {
   return (
-    <div className="overflow-x-hidden">
+    <>
+      <SEO
+        title="About Us"
+        description="Learn about SKay Auto Group - Richmond's premier luxury and exotic car dealership. Over 15 years of excellence in curating exceptional automobiles."
+        keywords="about SKay Auto Group, luxury car dealership, Richmond BC, exotic cars, car dealer history"
+        url="/about"
+        jsonLd={localBusinessSchema}
+      />
+      <div className="overflow-x-hidden">
       <section className="relative h-[50vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1600&q=80" alt="About SKay Auto group" className="w-full h-full object-cover" />
@@ -128,5 +137,6 @@ export default function About() {
         </div>
       </section>
     </div>
+    </>
   );
 }

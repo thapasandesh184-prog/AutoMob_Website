@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Gauge, Calendar, Tag, CheckCircle2, ChevronLeft, ChevronRight, Calculator, Info, Link2, Scale } from 'lucide-react';
 import VehicleCard from '@/components/VehicleCard';
+import SEO, { vehicleSchema } from '@/components/SEO';
 
 export default function VehicleDetail() {
   const { slug } = useParams();
@@ -130,8 +131,22 @@ export default function VehicleDetail() {
     { label: 'Status', value: vehicle.status },
   ];
 
+  const pageTitle = vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : 'Vehicle Details';
+  const pageDescription = vehicle
+    ? `${vehicle.year} ${vehicle.make} ${vehicle.model} - ${formatPrice(vehicle.price)} - ${formatMileage(vehicle.mileage)} km. ${vehicle.description?.slice(0, 150)}...`
+    : 'View vehicle details at SKay Auto Group';
+
   return (
-    <div className="min-h-screen bg-black pb-24">
+    <>
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        image={vehicle?.images?.[0]}
+        url={`/inventory/${slug}`}
+        type="product"
+        jsonLd={vehicle ? vehicleSchema(vehicle) : null}
+      />
+      <div className="min-h-screen bg-black pb-24">
       <div className="px-4 sm:px-6 lg:px-8 py-6 border-b border-white/5">
         <div className="max-w-7xl mx-auto">
           <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
@@ -341,5 +356,6 @@ export default function VehicleDetail() {
         </motion.div>
       </div>
     </div>
+    </>
   );
 }

@@ -5,6 +5,7 @@ import { ArrowRight, CheckCircle2, Shield, Clock, Award, ShieldCheck, Lock, Star
 import HeroSearchSection from '@/components/HeroSearchSection';
 import VehicleCard from '@/components/VehicleCard';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
+import SEO, { localBusinessSchema, websiteSchema } from '@/components/SEO';
 
 const iconMap = { Shield, Clock, Award, ShieldCheck, Lock, Star, Users, Gem };
 
@@ -65,8 +66,16 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="overflow-x-hidden">
-      <HeroSearchSection />
+    <>
+      <SEO
+        title="Luxury & Exotic Car Dealership"
+        description="Discover the finest collection of luxury and exotic vehicles at SKay Auto Group. Premium pre-owned cars, SUVs, and supercars with world-class service in Richmond, BC."
+        keywords="luxury cars, exotic cars, pre-owned vehicles, car dealership, Richmond BC, Vancouver, BMW, Mercedes, Porsche"
+        url="/"
+        jsonLd={[localBusinessSchema, websiteSchema]}
+      />
+      <div className="overflow-x-hidden">
+        <HeroSearchSection />
 
       {/* Stats Section */}
       <section className="relative z-10 px-4 sm:px-6 lg:px-8 pt-12 md:pt-16">
@@ -226,7 +235,8 @@ export default function Home() {
           </div>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 }
 

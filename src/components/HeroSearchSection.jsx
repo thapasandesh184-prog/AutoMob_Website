@@ -52,7 +52,8 @@ export default function HeroSearchSection() {
     if (model) params.set('model', model);
     if (minYear) params.set('minYear', minYear);
     if (maxYear) params.set('maxYear', maxYear);
-    navigate(query ? `/inventory?${params.toString()}` : '/inventory');
+    const queryString = params.toString();
+    navigate(queryString ? `/inventory?${queryString}` : '/inventory');
   };
 
   return (

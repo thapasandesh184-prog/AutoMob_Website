@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, Clock, Loader2 } from 'lucide-react';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
+import SEO, { localBusinessSchema } from '@/components/SEO';
 
 const subjects = [
   'General Inquiry', 'Vehicle Information', 'Financing', 'Trade-In', 'Service', 'Parts', 'Other',
@@ -59,7 +60,15 @@ export default function Contact() {
   };
 
   return (
-    <div className="overflow-x-hidden">
+    <>
+      <SEO
+        title="Contact Us"
+        description="Contact SKay Auto Group in Richmond, BC. Visit our showroom, call us, or send a message. We're here to help you find your dream car."
+        keywords="contact SKay Auto Group, car dealership Richmond, luxury car dealer contact, visit showroom"
+        url="/contact"
+        jsonLd={localBusinessSchema}
+      />
+      <div className="overflow-x-hidden">
       <section className="relative h-[40vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1600&q=80')" }} />
@@ -152,5 +161,6 @@ export default function Contact() {
         </div>
       </section>
     </div>
+    </>
   );
 }

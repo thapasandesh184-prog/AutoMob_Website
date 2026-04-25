@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, SlidersHorizontal, ArrowUpDown, LayoutGrid, List, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import VehicleCard from '@/components/VehicleCard';
 import CompareBar from '@/components/CompareBar';
+import SEO from '@/components/SEO';
 
 export default function Inventory() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -126,8 +127,15 @@ export default function Inventory() {
   const compareVehicles = useMemo(() => vehicles.filter((v) => compareIds.includes(v.id)), [vehicles, compareIds]);
 
   return (
-    <div className="min-h-screen bg-black">
-      <section className="pt-8 pb-12 px-4 sm:px-6 lg:px-8 border-b border-white/5">
+    <>
+      <SEO
+        title="Inventory"
+        description="Browse our curated inventory of luxury and exotic vehicles. Find premium pre-owned cars, SUVs, and supercars at SKay Auto Group in Richmond, BC."
+        keywords="luxury car inventory, exotic cars for sale, pre-owned vehicles, BMW, Mercedes, Porsche, Audi, Richmond BC"
+        url="/inventory"
+      />
+      <div className="min-h-screen bg-black">
+        <section className="pt-8 pb-12 px-4 sm:px-6 lg:px-8 border-b border-white/5">
         <div className="max-w-7xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <p className="text-[#C0A66A] text-sm tracking-[0.2em] uppercase mb-3">Premium Selection</p>
@@ -377,6 +385,7 @@ export default function Inventory() {
       </section>
 
       <CompareBar vehicles={compareVehicles} onRemove={(id) => toggleCompare(id)} onClear={() => setCompareIds([])} />
-    </div>
+      </div>
+    </>
   );
 }

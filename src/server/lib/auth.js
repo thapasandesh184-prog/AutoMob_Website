@@ -2,7 +2,11 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { prisma } from './prisma.js';
 
-const JWT_SECRET = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET || 'fallback-secret-change-me';
+const JWT_SECRET = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error('[AUTH] FATAL: JWT_SECRET or NEXTAUTH_SECRET environment variable is required');
+}
 
 export function generateToken(user) {
   return jwt.sign(

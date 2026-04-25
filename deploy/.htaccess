@@ -1,0 +1,81 @@
+# ============================================================
+# Hostinger Node.js .htaccess — SKay Auto Group
+# Place this file in: public_html/.htaccess
+# ============================================================
+
+# Passenger App Configuration
+PassengerAppRoot /home/u171879646/domains/skayautogroup.ca/nodejs
+PassengerAppType node
+PassengerStartupFile server.js
+PassengerBaseURI /
+
+# Node.js 22.x (required — do NOT use 20.x)
+# Check available paths with: ls /opt/alt/ | grep nodejs
+PassengerNodejs /opt/alt/alt-nodejs22/root/bin/node
+
+# Restart directory (create this folder on server!)
+PassengerRestartDir /home/u171879646/domains/skayautogroup.ca/nodejs/tmp
+
+# Console logging (helps debug startup errors)
+SetEnv LSNODE_CONSOLE_LOG console.log
+
+# Prisma / Tokio thread config (prevents "timer has gone away" panic)
+SetEnv TOKIO_WORKER_THREADS 2
+
+# libuv threadpool size (prevents Prisma connection issues under load)
+SetEnv UV_THREADPOOL_SIZE 128
+
+# ============================================================
+# ENVIRONMENT VARIABLES (replace with your actual values)
+# These override anything set in the hPanel UI
+# ============================================================
+SetEnv DATABASE_URL "mysql://YOUR_DB_USER:YOUR_DB_PASSWORD@mysql.hostinger.com:3306/YOUR_DB_NAME?connection_limit=5&pool_timeout=0&connect_timeout=10"
+SetEnv JWT_SECRET "YOUR_RANDOM_SECRET_MIN_32_CHARS"
+SetEnv NEXTAUTH_SECRET "YOUR_RANDOM_SECRET_MIN_32_CHARS"
+SetEnv CLOUDINARY_CLOUD_NAME "dtwdfqhju"
+SetEnv CLOUDINARY_API_KEY "418448813881749"
+SetEnv CLOUDINARY_API_SECRET "YOUR_CLOUDINARY_SECRET"
+SetEnv ADMIN_EMAIL "admin@skayautogroup.ca"
+SetEnv SETUP_SECRET "YOUR_SETUP_SECRET"
+SetEnv NODE_ENV "production"
+
+# ============================================================
+# SECURITY & PERFORMANCE
+# ============================================================
+
+# Disable server signature
+ServerSignature Off
+
+# Disable directory browsing
+Options -Indexes
+
+# Protect sensitive files
+<FilesMatch "^\.">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# Block access to build/config files
+RewriteRule ^\.builds - [F,L]
+RewriteRule ^\.env - [F,L]
+RewriteRule ^\.git - [F,L]
+RewriteRule ^node_modules - [F,L]
+RewriteRule ^prisma - [F,L]
+RewriteRule ^src - [F,L]
+
+# Enable compression
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript application/json
+</IfModule>
+
+# Browser caching for static assets
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType image/jpg "access plus 1 month"
+  ExpiresByType image/jpeg "access plus 1 month"
+  ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType text/css "access plus 1 week"
+  ExpiresByType application/javascript "access plus 1 week"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>

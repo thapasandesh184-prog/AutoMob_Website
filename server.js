@@ -1,9 +1,10 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from './src/server/lib/prisma.js';
 
 import vehiclesRouter from './src/server/routes/vehicles.js';
 import authRouter from './src/server/routes/auth.js';
@@ -22,6 +23,7 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -35,11 +37,9 @@ app.use('/api/admin', adminRouter);
 // Health check
 app.get('/api/health', async (req, res) => {
   try {
-    const prisma = new PrismaClient();
     await prisma.$queryRaw`SELECT 1 as test`;
     const vehicles = await prisma.vehicle.count();
     const admins = await prisma.adminUser.count();
-    await prisma.$disconnect();
     res.json({ status: 'ok', db: 'connected', vehicles, admins });
   } catch (err) {
     res.status(500).json({ status: 'error', message: err.message });
@@ -54,7 +54,17 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`[SERVER] SKay Auto Group running on port ${PORT}`);
-  console.log(`[SERVER] Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+// Eager Prisma initialization + server start
+(async () => {
+  try {
+    await prisma.$connect();
+    console.log('[PRISMA] Database connected successfully');
+  } catch (err) {
+    console.error('[PRISMA] Database connection failed:', err.message);
+  }
+
+  app.listen(PORT, () => {
+    console.log(`[SERVER] SKay Auto Group running on port ${PORT}`);
+    console.log(`[SERVER] Environment: ${process.env.NODE_ENV || 'development'}`);
+  });
+})();

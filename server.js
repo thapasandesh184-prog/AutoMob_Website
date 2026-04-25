@@ -3,6 +3,13 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import { PrismaClient } from '@prisma/client';
+
+import vehiclesRouter from './src/server/routes/vehicles.js';
+import authRouter from './src/server/routes/auth.js';
+import settingsRouter from './src/server/routes/settings.js';
+import formsRouter from './src/server/routes/forms.js';
+import adminRouter from './src/server/routes/admin.js';
 
 // Load env vars
 dotenv.config();
@@ -19,16 +26,15 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // API routes
-app.use('/api/vehicles', (await import('./src/server/routes/vehicles.js')).default);
-app.use('/api/auth', (await import('./src/server/routes/auth.js')).default);
-app.use('/api/settings', (await import('./src/server/routes/settings.js')).default);
-app.use('/api', (await import('./src/server/routes/forms.js')).default);
-app.use('/api/admin', (await import('./src/server/routes/admin.js')).default);
+app.use('/api/vehicles', vehiclesRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/settings', settingsRouter);
+app.use('/api', formsRouter);
+app.use('/api/admin', adminRouter);
 
 // Health check
 app.get('/api/health', async (req, res) => {
   try {
-    const { PrismaClient } = await import('@prisma/client');
     const prisma = new PrismaClient();
     await prisma.$queryRaw`SELECT 1 as test`;
     const vehicles = await prisma.vehicle.count();

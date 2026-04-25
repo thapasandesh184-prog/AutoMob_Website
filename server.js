@@ -43,6 +43,9 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 logStartup(`[ENV] DATABASE_URL present: ${!!process.env.DATABASE_URL}`);
 logStartup(`[ENV] JWT_SECRET present: ${!!process.env.JWT_SECRET}`);
 logStartup(`[ENV] NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
+logStartup(`[ENV] CLOUDINARY_CLOUD_NAME present: ${!!process.env.CLOUDINARY_CLOUD_NAME}`);
+logStartup(`[ENV] CLOUDINARY_API_KEY present: ${!!process.env.CLOUDINARY_API_KEY}`);
+logStartup(`[ENV] CLOUDINARY_API_SECRET present: ${!!process.env.CLOUDINARY_API_SECRET}`);
 
 // ─── STATIC FILES (mount IMMEDIATELY — don't wait for DB) ───
 const distPath = path.join(__dirname, 'dist');

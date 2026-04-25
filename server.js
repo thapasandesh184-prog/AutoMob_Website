@@ -44,6 +44,85 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', time: Date.now(), env: process.env.NODE_ENV || 'development' });
 });
 
+// Setup: check if database is initialized (no auth needed)
+app.get('/api/setup/check', async (req, res) => {
+  try {
+    const { prisma } = await import('./src/server/lib/prisma.js');
+    const vehicles = await prisma.vehicle.count();
+    const admins = await prisma.adminUser.count();
+    res.json({ initialized: true, vehicles, admins });
+  } catch (err) {
+    res.json({ initialized: false, error: err.message });
+  }
+});
+
+// Setup: run Prisma db push without SSH (protected by SETUP_SECRET)
+app.post('/api/setup/migrate', async (req, res) => {
+  const secret = req.headers['x-setup-secret'] || req.body?.secret;
+  if (secret !== process.env.SETUP_SECRET) {
+    return res.status(403).json({ error: 'Invalid setup secret' });
+  }
+
+  try {
+    const { exec } = await import('child_process');
+    const { promisify } = await import('util');
+    const execAsync = promisify(exec);
+
+    logStartup('[SETUP] Running prisma db push...');
+    const { stdout, stderr } = await execAsync('npx prisma db push --accept-data-loss', {
+      cwd: __dirname,
+      timeout: 60000,
+      env: { ...process.env },
+    });
+
+    logStartup(`[SETUP] stdout: ${stdout}`);
+    if (stderr) logStartup(`[SETUP] stderr: ${stderr}`);
+
+    res.json({ success: true, output: stdout, errors: stderr || null });
+  } catch (err) {
+    logStartup(`[SETUP] Migration failed: ${err.message}`);
+    res.status(500).json({ success: false, error: err.message, output: err.stdout, stderr: err.stderr });
+  }
+});
+
+// Setup: seed initial data (protected by SETUP_SECRET)
+app.post('/api/setup/seed', async (req, res) => {
+  const secret = req.headers['x-setup-secret'] || req.body?.secret;
+  if (secret !== process.env.SETUP_SECRET) {
+    return res.status(403).json({ error: 'Invalid setup secret' });
+  }
+
+  try {
+    const { prisma } = await import('./src/server/lib/prisma.js');
+
+    // Seed default site settings
+    const defaults = [
+      { key: 'phone', value: '+1 7789907468', group: 'contact' },
+      { key: 'email', value: 'info@skayautogroup.ca', group: 'contact' },
+      { key: 'address', value: '21320 Westminster Hwy #2128', group: 'contact' },
+      { key: 'city', value: 'Richmond', group: 'contact' },
+      { key: 'state', value: 'BC', group: 'contact' },
+      { key: 'zip', value: 'V5W 3A3', group: 'contact' },
+      { key: 'hours', value: 'Mon - Sat: 10am - 7pm', group: 'contact' },
+      { key: 'siteName', value: 'SKay Auto Group', group: 'general' },
+      { key: 'brands', value: '[]', group: 'general' },
+      { key: 'quickLinks', value: '[]', group: 'general' },
+    ];
+
+    for (const s of defaults) {
+      await prisma.siteSetting.upsert({
+        where: { key: s.key },
+        update: { value: s.value },
+        create: s,
+      });
+    }
+
+    res.json({ success: true, message: 'Default settings seeded' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // robots.txt
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain');

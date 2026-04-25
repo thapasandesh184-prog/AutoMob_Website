@@ -48,9 +48,9 @@ router.post('/trade-in', async (req, res) => {
     const b = req.body;
     const id = generateId();
     await insert(
-      `INSERT INTO TradeInSubmission (id, firstName, lastName, email, phone, year, make, model, trim,
-       vin, mileage, color, transmission, \`condition\`, mechanical, exterior, interior, hasLoan,
-       payoffAmount, photos, videos)
+      `INSERT INTO TradeInSubmission (\`id\`, \`firstName\`, \`lastName\`, \`email\`, \`phone\`, \`year\`, \`make\`, \`model\`, \`trim\`,
+       \`vin\`, \`mileage\`, \`color\`, \`transmission\`, \`condition\`, \`mechanical\`, \`exterior\`, \`interior\`, \`hasLoan\`,
+       \`payoffAmount\`, \`photos\`, \`videos\`)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id, b.firstName, b.lastName, b.email, b.phone, b.year, b.make, b.model,

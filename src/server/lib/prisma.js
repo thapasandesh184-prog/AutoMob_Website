@@ -2,19 +2,21 @@ import { PrismaClient } from '@prisma/client';
 
 const globalForPrisma = global;
 
+// Log env status for debugging (visible in Hostinger runtime logs)
+if (!process.env.DATABASE_URL) {
+  console.error('[PRISMA] WARNING: DATABASE_URL is not set in environment');
+}
+
 // Prisma config optimized for shared hosting (Hostinger)
-// - connection_limit=5: Hostinger MySQL allows limited concurrent connections
-// - pool_timeout=0: Never timeout waiting for a connection (retry instead)
-// - connect_timeout=10: Fail fast if DB is unreachable
 const prismaOptions = {
   log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
 };
 
-// Only add datasource config if not already in DATABASE_URL
-// (Hostinger DATABASE_URL should already have these params)
+// Singleton pattern — critical for shared hosting to prevent multiple engine instances
 export const prisma = globalForPrisma.prisma || new PrismaClient(prismaOptions);
 
-if (process.env.NODE_ENV !== 'production') {
+// Cache in global for hot reloads in dev, but also safe in production
+if (process.env.NODE_ENV !== 'production' || !globalForPrisma.prisma) {
   globalForPrisma.prisma = prisma;
 }
 

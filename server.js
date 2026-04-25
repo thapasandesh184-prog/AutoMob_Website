@@ -16,8 +16,13 @@ function logStartup(msg) {
 
 logStartup('=== SERVER STARTING ===');
 
-// Load env vars
+// Load env vars from .env file (critical for Hostinger)
 dotenv.config();
+
+// Debug: log which env vars are present (don't log values, just presence)
+logStartup(`[ENV] DATABASE_URL present: ${!!process.env.DATABASE_URL}`);
+logStartup(`[ENV] JWT_SECRET present: ${!!process.env.JWT_SECRET}`);
+logStartup(`[ENV] NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -195,12 +200,23 @@ const server = app.listen(PORT, () => {
 // Load Prisma and routes in background
 (async () => {
   let prisma = null;
+  let prismaReady = false;
+
   try {
     const prismaMod = await import('./src/server/lib/prisma.js');
     prisma = prismaMod.prisma;
     logStartup('[PRISMA] Module loaded');
+
+    // Eager connect BEFORE mounting routes to prevent concurrent engine starts
+    if (process.env.DATABASE_URL) {
+      await prisma.$connect();
+      prismaReady = true;
+      logStartup('[PRISMA] Database connected successfully');
+    } else {
+      logStartup('[PRISMA] Skipping connect: DATABASE_URL not set');
+    }
   } catch (err) {
-    logStartup(`[PRISMA] Failed to load: ${err.message}`);
+    logStartup(`[PRISMA] Failed to load/connect: ${err.message}`);
   }
 
   // Mount API routes
@@ -233,12 +249,6 @@ const server = app.listen(PORT, () => {
       } catch (err) {
         res.status(500).json({ status: 'error', message: err.message });
       }
-    });
-
-    prisma.$connect().then(() => {
-      logStartup('[PRISMA] Database connected successfully');
-    }).catch(err => {
-      logStartup(`[PRISMA] DB connection failed: ${err.message}`);
     });
   }
 

@@ -135,7 +135,6 @@ ${allPages.map(p => `  <url>
 
 // ─── UPLOAD (mounted immediately — no DB needed) ───
 import multer from 'multer';
-import path from 'path';
 import { uploadToCloudinary } from './src/server/lib/cloudinary.js';
 
 const upload = multer({

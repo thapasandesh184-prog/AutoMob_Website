@@ -35,26 +35,41 @@ router.get('/cars', async (req, res) => {
   }
 });
 
+// Helper to generate unique slug
+function generateSlug(year, make, model) {
+  const base = `${year}-${make}-${model}`.toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+  const suffix = Math.random().toString(36).substring(2, 8);
+  return `${base}-${suffix}`;
+}
+
 // POST /api/admin/cars
 router.post('/cars', async (req, res) => {
   try {
     const data = req.body;
     const features = Array.isArray(data.features) ? data.features.join(',') : data.features || '';
     const images = Array.isArray(data.images) ? data.images.join(',') : data.images || '';
-    
+    const slug = data.slug || generateSlug(data.year, data.make, data.model);
+
     const vehicle = await prisma.vehicle.create({
       data: {
         ...data,
+        slug,
         features,
         images,
         year: Number(data.year),
         price: Number(data.price),
         mileage: Number(data.mileage),
+        msrp: data.msrp ? Number(data.msrp) : null,
+        doors: data.doors ? Number(data.doors) : null,
+        seats: data.seats ? Number(data.seats) : null,
       },
     });
     res.status(201).json(vehicle);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to create vehicle' });
+    console.error('Create vehicle error:', err);
+    res.status(500).json({ error: 'Failed to create vehicle', detail: err.message });
   }
 });
 

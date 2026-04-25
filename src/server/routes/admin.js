@@ -1,8 +1,11 @@
 import { Router } from 'express';
+import multer from 'multer';
 import { prisma } from '../lib/prisma.js';
 import { requireAuth, hashPassword } from '../lib/auth.js';
+import { uploadToCloudinary } from '../lib/cloudinary.js';
 
 const router = Router();
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
 // All routes require auth
 router.use(requireAuth);
@@ -106,7 +109,18 @@ router.get('/submissions', async (req, res) => {
   }
 });
 
-// POST /api/admin/settings
+// GET /api/admin/settings - return all settings as key-value object
+router.get('/settings', async (req, res) => {
+  try {
+    const settings = await prisma.siteSetting.findMany();
+    const mapped = Object.fromEntries(settings.map(s => [s.key, s.value]));
+    res.json(mapped);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch settings' });
+  }
+});
+
+// POST /api/admin/settings - single setting upsert
 router.post('/settings', async (req, res) => {
   try {
     const { key, value, group = 'general' } = req.body;
@@ -121,6 +135,25 @@ router.post('/settings', async (req, res) => {
   }
 });
 
+// PUT /api/admin/settings - bulk update all settings
+router.put('/settings', async (req, res) => {
+  try {
+    const payload = req.body;
+    const results = [];
+    for (const [key, value] of Object.entries(payload)) {
+      const setting = await prisma.siteSetting.upsert({
+        where: { key },
+        update: { value: String(value) },
+        create: { key, value: String(value), group: 'general' },
+      });
+      results.push(setting);
+    }
+    res.json({ success: true, count: results.length });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to save settings' });
+  }
+});
+
 // DELETE /api/admin/settings/:key
 router.delete('/settings/:key', async (req, res) => {
   try {
@@ -128,6 +161,23 @@ router.delete('/settings/:key', async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete setting' });
+  }
+});
+
+// POST /api/admin/upload - upload image to Cloudinary
+router.post('/upload', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image file provided' });
+    }
+    const result = await uploadToCloudinary(req.file.buffer, {
+      folder: 'skay-auto-group/admin',
+      resource_type: 'image',
+    });
+    res.json({ url: result.secure_url, public_id: result.public_id });
+  } catch (err) {
+    console.error('Upload error:', err);
+    res.status(500).json({ error: 'Image upload failed', detail: err.message });
   }
 });
 

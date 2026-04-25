@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import fs from 'fs';
 
-// Startup error log (since stderr may not be visible on Hostinger)
+// Startup error log
 const STARTUP_LOG = '/tmp/skay-startup.log';
 function logStartup(msg) {
   const line = `[${new Date().toISOString()}] ${msg}\n`;
@@ -16,13 +16,8 @@ function logStartup(msg) {
 
 logStartup('=== SERVER STARTING ===');
 
-// Load env vars from .env file (critical for Hostinger)
+// Load env vars
 dotenv.config();
-
-// Debug: log which env vars are present (don't log values, just presence)
-logStartup(`[ENV] DATABASE_URL present: ${!!process.env.DATABASE_URL}`);
-logStartup(`[ENV] JWT_SECRET present: ${!!process.env.JWT_SECRET}`);
-logStartup(`[ENV] NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,91 +39,35 @@ app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Health check (no DB required — always returns 200)
+// Debug: log env vars
+logStartup(`[ENV] DATABASE_URL present: ${!!process.env.DATABASE_URL}`);
+logStartup(`[ENV] JWT_SECRET present: ${!!process.env.JWT_SECRET}`);
+logStartup(`[ENV] NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
+
+// ─── STATIC FILES (mount IMMEDIATELY — don't wait for DB) ───
+const distPath = path.join(__dirname, 'dist');
+logStartup(`[STATIC] Serving from: ${distPath}`);
+logStartup(`[STATIC] dist/index.html exists: ${fs.existsSync(path.join(distPath, 'index.html'))}`);
+logStartup(`[STATIC] dist/assets exists: ${fs.existsSync(path.join(distPath, 'assets'))}`);
+
+app.use(express.static(distPath));
+
+// ─── SPA FALLBACK (must be after static, exclude API routes) ───
+app.get(/^(?!\/api\/)/, (req, res) => {
+  const indexPath = path.join(distPath, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).type('text/plain').send('dist/index.html not found. Build may be missing.');
+  }
+});
+
+// ─── HEALTH CHECK ───
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', time: Date.now(), env: process.env.NODE_ENV || 'development' });
 });
 
-// Setup: check if database is initialized (no auth needed)
-app.get('/api/setup/check', async (req, res) => {
-  try {
-    const { prisma } = await import('./src/server/lib/prisma.js');
-    const vehicles = await prisma.vehicle.count();
-    const admins = await prisma.adminUser.count();
-    res.json({ initialized: true, vehicles, admins });
-  } catch (err) {
-    res.json({ initialized: false, error: err.message });
-  }
-});
-
-// Setup: run Prisma db push without SSH (protected by SETUP_SECRET)
-app.post('/api/setup/migrate', async (req, res) => {
-  const secret = req.headers['x-setup-secret'] || req.body?.secret;
-  if (secret !== process.env.SETUP_SECRET) {
-    return res.status(403).json({ error: 'Invalid setup secret' });
-  }
-
-  try {
-    const { exec } = await import('child_process');
-    const { promisify } = await import('util');
-    const execAsync = promisify(exec);
-
-    logStartup('[SETUP] Running prisma db push...');
-    const { stdout, stderr } = await execAsync('npx prisma db push --accept-data-loss', {
-      cwd: __dirname,
-      timeout: 60000,
-      env: { ...process.env },
-    });
-
-    logStartup(`[SETUP] stdout: ${stdout}`);
-    if (stderr) logStartup(`[SETUP] stderr: ${stderr}`);
-
-    res.json({ success: true, output: stdout, errors: stderr || null });
-  } catch (err) {
-    logStartup(`[SETUP] Migration failed: ${err.message}`);
-    res.status(500).json({ success: false, error: err.message, output: err.stdout, stderr: err.stderr });
-  }
-});
-
-// Setup: seed initial data (protected by SETUP_SECRET)
-app.post('/api/setup/seed', async (req, res) => {
-  const secret = req.headers['x-setup-secret'] || req.body?.secret;
-  if (secret !== process.env.SETUP_SECRET) {
-    return res.status(403).json({ error: 'Invalid setup secret' });
-  }
-
-  try {
-    const { prisma } = await import('./src/server/lib/prisma.js');
-
-    // Seed default site settings
-    const defaults = [
-      { key: 'phone', value: '+1 7789907468', group: 'contact' },
-      { key: 'email', value: 'info@skayautogroup.ca', group: 'contact' },
-      { key: 'address', value: '21320 Westminster Hwy #2128', group: 'contact' },
-      { key: 'city', value: 'Richmond', group: 'contact' },
-      { key: 'state', value: 'BC', group: 'contact' },
-      { key: 'zip', value: 'V5W 3A3', group: 'contact' },
-      { key: 'hours', value: 'Mon - Sat: 10am - 7pm', group: 'contact' },
-      { key: 'siteName', value: 'SKay Auto Group', group: 'general' },
-      { key: 'brands', value: '[]', group: 'general' },
-      { key: 'quickLinks', value: '[]', group: 'general' },
-    ];
-
-    for (const s of defaults) {
-      await prisma.siteSetting.upsert({
-        where: { key: s.key },
-        update: { value: s.value },
-        create: s,
-      });
-    }
-
-    res.json({ success: true, message: 'Default settings seeded' });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-// robots.txt
+// ─── ROBOTS.TXT ───
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain');
   res.send(`User-agent: *
@@ -139,7 +78,7 @@ Sitemap: https://skayautogroup.ca/sitemap.xml
 `);
 });
 
-// sitemap.xml
+// ─── SITEMAP.XML ───
 app.get('/sitemap.xml', async (req, res) => {
   try {
     const { prisma } = await import('./src/server/lib/prisma.js');
@@ -191,35 +130,95 @@ ${allPages.map(p => `  <url>
   }
 });
 
-// Start server immediately — don't wait for anything
-const server = app.listen(PORT, () => {
+// ─── SETUP ENDPOINTS (no DB required for check) ───
+app.get('/api/setup/check', async (req, res) => {
+  try {
+    const { prisma } = await import('./src/server/lib/prisma.js');
+    const vehicles = await prisma.vehicle.count();
+    const admins = await prisma.adminUser.count();
+    res.json({ initialized: true, vehicles, admins });
+  } catch (err) {
+    res.json({ initialized: false, error: err.message });
+  }
+});
+
+app.post('/api/setup/migrate', async (req, res) => {
+  const secret = req.headers['x-setup-secret'] || req.body?.secret;
+  if (secret !== process.env.SETUP_SECRET) {
+    return res.status(403).json({ error: 'Invalid setup secret' });
+  }
+  try {
+    const { exec } = await import('child_process');
+    const { promisify } = await import('util');
+    const execAsync = promisify(exec);
+    logStartup('[SETUP] Running prisma db push...');
+    const { stdout, stderr } = await execAsync('npx prisma db push --accept-data-loss', {
+      cwd: __dirname,
+      timeout: 60000,
+      env: { ...process.env },
+    });
+    logStartup(`[SETUP] stdout: ${stdout}`);
+    if (stderr) logStartup(`[SETUP] stderr: ${stderr}`);
+    res.json({ success: true, output: stdout, errors: stderr || null });
+  } catch (err) {
+    logStartup(`[SETUP] Migration failed: ${err.message}`);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/setup/seed', async (req, res) => {
+  const secret = req.headers['x-setup-secret'] || req.body?.secret;
+  if (secret !== process.env.SETUP_SECRET) {
+    return res.status(403).json({ error: 'Invalid setup secret' });
+  }
+  try {
+    const { prisma } = await import('./src/server/lib/prisma.js');
+    const defaults = [
+      { key: 'phone', value: '+1 7789907468', group: 'contact' },
+      { key: 'email', value: 'info@skayautogroup.ca', group: 'contact' },
+      { key: 'address', value: '21320 Westminster Hwy #2128', group: 'contact' },
+      { key: 'city', value: 'Richmond', group: 'contact' },
+      { key: 'state', value: 'BC', group: 'contact' },
+      { key: 'zip', value: 'V5W 3A3', group: 'contact' },
+      { key: 'hours', value: 'Mon - Sat: 10am - 7pm', group: 'contact' },
+      { key: 'siteName', value: 'SKay Auto Group', group: 'general' },
+      { key: 'brands', value: '[]', group: 'general' },
+      { key: 'quickLinks', value: '[]', group: 'general' },
+    ];
+    for (const s of defaults) {
+      await prisma.siteSetting.upsert({
+        where: { key: s.key },
+        update: { value: s.value },
+        create: s,
+      });
+    }
+    res.json({ success: true, message: 'Default settings seeded' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ─── START SERVER ───
+app.listen(PORT, () => {
   logStartup(`[SERVER] SKay Auto Group running on port ${PORT}`);
   logStartup(`[SERVER] Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
-// Load Prisma and routes in background
+// ─── LOAD API ROUTES IN BACKGROUND ───
 (async () => {
   let prisma = null;
-  let prismaReady = false;
-
   try {
     const prismaMod = await import('./src/server/lib/prisma.js');
     prisma = prismaMod.prisma;
     logStartup('[PRISMA] Module loaded');
-
-    // Eager connect BEFORE mounting routes to prevent concurrent engine starts
     if (process.env.DATABASE_URL) {
       await prisma.$connect();
-      prismaReady = true;
       logStartup('[PRISMA] Database connected successfully');
-    } else {
-      logStartup('[PRISMA] Skipping connect: DATABASE_URL not set');
     }
   } catch (err) {
     logStartup(`[PRISMA] Failed to load/connect: ${err.message}`);
   }
 
-  // Mount API routes
   const routes = [
     { path: '/api/vehicles', mod: './src/server/routes/vehicles.js' },
     { path: '/api/auth', mod: './src/server/routes/auth.js' },
@@ -252,16 +251,5 @@ const server = app.listen(PORT, () => {
     });
   }
 
-  // Static files — must be after API routes
-  app.use(express.static(path.join(__dirname, 'dist')));
-
-  // SPA fallback — must be LAST
-  app.get('*', (req, res) => {
-    const indexPath = path.join(__dirname, 'dist', 'index.html');
-    if (fs.existsSync(indexPath)) {
-      res.sendFile(indexPath);
-    } else {
-      res.status(404).send('dist/index.html not found. Build may be missing.');
-    }
-  });
+  logStartup('[INIT] Server fully initialized');
 })();

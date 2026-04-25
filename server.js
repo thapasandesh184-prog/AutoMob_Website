@@ -242,27 +242,51 @@ app.listen(PORT, () => {
 // ─── LOAD API ROUTES IN BACKGROUND ───
 (async () => {
   let prisma = null;
+  let dbHealthy = false;
+
   try {
     const prismaMod = await import('./src/server/lib/prisma.js');
     prisma = prismaMod.prisma;
     logStartup('[PRISMA] Module loaded');
+
     if (process.env.DATABASE_URL) {
-      await prisma.$connect();
-      logStartup('[PRISMA] Database connected successfully');
+      // Use retry-aware connection helper
+      try {
+        await prisma.$connect();
+        // Verify with a real query
+        await prisma.$queryRaw`SELECT 1 as health`;
+        dbHealthy = true;
+        logStartup('[PRISMA] Database connected and healthy');
+      } catch (connectErr) {
+        logStartup(`[PRISMA] Initial connect failed: ${connectErr.message}`);
+        // Try once more with a fresh client via ensurePrismaConnected
+        try {
+          await prismaMod.ensurePrismaConnected();
+          dbHealthy = true;
+          logStartup('[PRISMA] Database healthy after retry');
+        } catch (retryErr) {
+          logStartup(`[PRISMA] Retry also failed: ${retryErr.message}`);
+        }
+      }
     }
   } catch (err) {
-    logStartup(`[PRISMA] Failed to load/connect: ${err.message}`);
+    logStartup(`[PRISMA] Failed to load module: ${err.message}`);
   }
 
   const routes = [
-    { path: '/api/vehicles', mod: './src/server/routes/vehicles.js' },
-    { path: '/api/auth', mod: './src/server/routes/auth.js' },
-    { path: '/api/settings', mod: './src/server/routes/settings.js' },
-    { path: '/api', mod: './src/server/routes/forms.js' },
-    { path: '/api/admin', mod: './src/server/routes/admin.js' },
+    { path: '/api/vehicles', mod: './src/server/routes/vehicles.js', needsDb: true },
+    { path: '/api/auth', mod: './src/server/routes/auth.js', needsDb: true },
+    { path: '/api/settings', mod: './src/server/routes/settings.js', needsDb: true },
+    { path: '/api', mod: './src/server/routes/forms.js', needsDb: true },
+    { path: '/api/admin', mod: './src/server/routes/admin.js', needsDb: true },
   ];
 
   for (const r of routes) {
+    if (r.needsDb && !dbHealthy) {
+      logStartup(`[ROUTE] ${r.path} blocked — DB not healthy`);
+      app.use(r.path, (req, res) => res.status(503).json({ error: 'Database temporarily unavailable. Please retry.' }));
+      continue;
+    }
     try {
       const mod = await import(r.mod);
       app.use(r.path, mod.default);
@@ -273,7 +297,7 @@ app.listen(PORT, () => {
     }
   }
 
-  if (prisma) {
+  if (dbHealthy && prisma) {
     app.get('/api/health/db', async (req, res) => {
       try {
         await prisma.$queryRaw`SELECT 1 as test`;
@@ -286,5 +310,5 @@ app.listen(PORT, () => {
     });
   }
 
-  logStartup('[INIT] Server fully initialized');
+  logStartup(`[INIT] Server fully initialized (DB: ${dbHealthy ? 'HEALTHY' : 'UNAVAILABLE'})`);
 })();

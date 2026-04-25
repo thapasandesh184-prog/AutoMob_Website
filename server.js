@@ -233,6 +233,17 @@ app.post('/api/setup/seed', async (req, res) => {
   }
 });
 
+// ─── API STARTUP GUARD ───
+// Returns 503 for /api/* while DB routes are still loading in background.
+// Real routes (mounted below in async IIFE) take over once ready.
+let apiRoutesReady = false;
+app.use('/api', (req, res, next) => {
+  if (!apiRoutesReady) {
+    return res.status(503).json({ error: 'Server initializing, please retry.' });
+  }
+  next();
+});
+
 // ─── START SERVER ───
 app.listen(PORT, () => {
   logStartup(`[SERVER] SKay Auto Group running on port ${PORT}`);
@@ -310,5 +321,6 @@ app.listen(PORT, () => {
     });
   }
 
+  apiRoutesReady = true;
   logStartup(`[INIT] Server fully initialized (DB: ${dbHealthy ? 'HEALTHY' : 'UNAVAILABLE'})`);
 })();

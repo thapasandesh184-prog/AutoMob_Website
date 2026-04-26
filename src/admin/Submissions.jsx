@@ -80,11 +80,20 @@ export default function SubmissionsPage() {
   );
 
   const parseMedia = (photos, videos) => {
-    const photoList = [];
-    const videoList = [];
-    try { if (photos) photoList.push(...JSON.parse(photos)); } catch { if (photos) photoList.push(...photos.split("||BASE64||")); }
-    try { if (videos) videoList.push(...JSON.parse(videos)); } catch {}
-    return { photoList, videoList };
+    const parseField = (val) => {
+      if (!val) return [];
+      try {
+        let parsed = JSON.parse(val);
+        // Handle legacy double-stringified data: server used JSON.stringify on an already-JSON string
+        if (typeof parsed === 'string') parsed = JSON.parse(parsed);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        // Legacy base64 concatenated format
+        if (typeof val === 'string') return val.split("||BASE64||").filter(Boolean);
+        return [];
+      }
+    };
+    return { photoList: parseField(photos), videoList: parseField(videos) };
   };
 
   const parseFeatures = (features) => {

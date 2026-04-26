@@ -57,8 +57,8 @@ router.post('/trade-in', async (req, res) => {
         b.trim || null, b.vin || null, b.mileage, b.color || null, b.transmission || null,
         b.condition || null, b.mechanical || null, b.exterior || null, b.interior || null,
         b.hasLoan ? 1 : 0, b.payoffAmount || null,
-        b.photos ? JSON.stringify(b.photos) : null,
-        b.videos ? JSON.stringify(b.videos) : null,
+        b.photos || null,
+        b.videos || null,
       ]
     );
     res.status(201).json({ success: true, id });

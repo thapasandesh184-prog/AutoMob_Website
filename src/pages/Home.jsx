@@ -256,8 +256,12 @@ export default function Home() {
       </section>
 
       {/* Map / Visit Us */}
-      <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+      <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 relative">
+        {/* Subtle background glow */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-black to-[#0a0a0a] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-[#C0A66A]/[0.03] rounded-full blur-[120px] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto relative">
           <div className="text-center mb-12">
             <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-[#C0A66A] text-sm tracking-[0.2em] uppercase mb-3">Visit Our Showroom</motion.p>
             <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="text-3xl md:text-5xl font-light text-white">
@@ -265,40 +269,59 @@ export default function Home() {
             </motion.h2>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Info Card */}
-            <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="bg-[#111] border border-white/10 p-8 h-fit">
-              <div className="w-14 h-14 bg-[#C0A66A]/10 flex items-center justify-center mb-6">
+            {/* Info Card — Floating */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="bg-[#111]/80 backdrop-blur-sm border border-white/[0.08] rounded-2xl p-8 h-fit shadow-[0_8px_32px_rgba(0,0,0,0.5)] shadow-[#C0A66A]/[0.04] hover:shadow-[#C0A66A]/[0.08] hover:border-[#C0A66A]/20 transition-all duration-500"
+            >
+              <div className="w-14 h-14 bg-gradient-to-br from-[#C0A66A]/20 to-[#C0A66A]/5 rounded-xl flex items-center justify-center mb-6 border border-[#C0A66A]/20">
                 <MapPin className="w-6 h-6 text-[#C0A66A]" />
               </div>
               <h3 className="text-xl font-medium text-white mb-4">SKay Auto Group</h3>
-              <div className="space-y-2 text-white/60 mb-8">
+              <div className="space-y-1.5 text-white/60 mb-8">
                 <p>{address}</p>
                 <p>{city}, {state} {zip}</p>
               </div>
               <div className="space-y-4 mb-8">
                 <div className="flex items-center gap-3 text-white/60">
-                  <Clock className="w-4 h-4 text-[#C0A66A]" />
+                  <div className="w-8 h-8 bg-white/[0.03] rounded-lg flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-[#C0A66A]" />
+                  </div>
                   <span className="text-sm">{hours}</span>
                 </div>
                 <div className="flex items-center gap-3 text-white/60">
-                  <Phone className="w-4 h-4 text-[#C0A66A]" />
+                  <div className="w-8 h-8 bg-white/[0.03] rounded-lg flex items-center justify-center">
+                    <Phone className="w-4 h-4 text-[#C0A66A]" />
+                  </div>
                   <a href={`tel:${phone.replace(/\s+/g, '')}`} className="text-sm hover:text-[#C0A66A] transition-colors">{phone}</a>
                 </div>
                 <div className="flex items-center gap-3 text-white/60">
-                  <Mail className="w-4 h-4 text-[#C0A66A]" />
+                  <div className="w-8 h-8 bg-white/[0.03] rounded-lg flex items-center justify-center">
+                    <Mail className="w-4 h-4 text-[#C0A66A]" />
+                  </div>
                   <a href={`mailto:${email}`} className="text-sm hover:text-[#C0A66A] transition-colors">{email}</a>
                 </div>
               </div>
               <Link
                 to="/directions"
-                className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-[#C0A66A] text-black font-medium hover:bg-[#D4BC86] transition-colors"
+                className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-gradient-to-r from-[#C0A66A] to-[#9A854C] text-black font-medium hover:from-[#D4BC86] hover:to-[#C0A66A] transition-all duration-300 rounded-xl"
               >
                 <Navigation className="w-4 h-4" />
                 Get Directions
               </Link>
             </motion.div>
-            {/* Map */}
-            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }} className="lg:col-span-2 bg-[#111] border border-white/10 overflow-hidden min-h-[400px]">
+
+            {/* Map — Floating */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="lg:col-span-2 bg-[#111]/60 backdrop-blur-sm border border-white/[0.08] rounded-2xl overflow-hidden min-h-[400px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] shadow-[#C0A66A]/[0.04] hover:shadow-[#C0A66A]/[0.08] hover:border-[#C0A66A]/20 transition-all duration-500"
+            >
               <iframe
                 src={mapEmbedUrl}
                 width="100%"
@@ -308,7 +331,7 @@ export default function Home() {
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 title="SKay Auto Group Location"
-                className="grayscale-[30%]"
+                className="grayscale-[20%] contrast-[1.05]"
               />
             </motion.div>
           </div>
@@ -324,6 +347,9 @@ function BrandsMarquee({ brands }) {
 
   if (brands.length === 0) return null;
 
+  // Triple the items for a truly seamless infinite loop
+  const tripleBrands = [...brands, ...brands, ...brands];
+
   return (
     <section className="py-24 md:py-32 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -334,17 +360,53 @@ function BrandsMarquee({ brands }) {
           </motion.h2>
         </div>
       </div>
-      <div className="relative group/marquee" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-[#0a0a0a] to-transparent z-10" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-[#0a0a0a] to-transparent z-10" />
-        <div className="flex gap-5 md:gap-6 w-max animate-marquee" style={{ animationPlayState: isPaused ? 'paused' : 'running' }}>
-          {[...brands, ...brands].map((brand, index) => (
-            <Link key={`${brand.name}-${index}`} to={`/inventory?make=${encodeURIComponent(brand.name)}`} className="relative w-[160px] md:w-[220px] h-[220px] md:h-[300px] overflow-hidden shrink-0 shadow-xl shadow-black/40 border border-white/5 hover:border-[#C0A66A]/40 transition-colors">
-              <img src={brand.image} alt={brand.name} className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" loading="lazy" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              <div className="absolute inset-0 flex items-end justify-center p-4 md:p-5">
-                <h3 className="text-white text-base md:text-lg font-medium tracking-wide text-center">{brand.name}</h3>
+
+      <div
+        className="relative"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        {/* Fade edges */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-20 md:w-40 bg-gradient-to-r from-[#0a0a0a] to-transparent z-10" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-20 md:w-40 bg-gradient-to-l from-[#0a0a0a] to-transparent z-10" />
+
+        {/* Scrolling track */}
+        <div
+          className="flex gap-5 md:gap-7 w-max animate-marquee will-change-transform"
+          style={{ animationPlayState: isPaused ? 'paused' : 'running' }}
+        >
+          {tripleBrands.map((brand, index) => (
+            <Link
+              key={`${brand.name}-${index}`}
+              to={`/inventory?make=${encodeURIComponent(brand.name)}`}
+              className="group relative w-[170px] md:w-[240px] h-[240px] md:h-[320px] overflow-hidden shrink-0 rounded-2xl border border-white/[0.06] bg-[#111] shadow-[0_4px_24px_rgba(0,0,0,0.4)] hover:shadow-[0_8px_40px_rgba(192,166,106,0.12)] hover:border-[#C0A66A]/30 transition-all duration-500"
+            >
+              {/* Image */}
+              <img
+                src={brand.image}
+                alt={brand.name}
+                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                loading="lazy"
+              />
+
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
+
+              {/* Top shimmer line on hover */}
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#C0A66A]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+              {/* Brand name */}
+              <div className="absolute inset-x-0 bottom-0 p-5 md:p-6">
+                <h3 className="text-white text-base md:text-lg font-medium tracking-wide text-center group-hover:text-[#C0A66A] transition-colors duration-300">
+                  {brand.name}
+                </h3>
+                <p className="text-white/0 group-hover:text-white/50 text-xs text-center mt-1 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
+                  View Inventory
+                </p>
               </div>
+
+              {/* Corner accent */}
+              <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-[#C0A66A]/0 group-hover:bg-[#C0A66A] transition-all duration-500 shadow-[0_0_8px_rgba(192,166,106,0)] group-hover:shadow-[0_0_8px_rgba(192,166,106,0.6)]" />
             </Link>
           ))}
         </div>

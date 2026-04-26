@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle2, Shield, Clock, Award, ShieldCheck, Lock, Star, Users, Gem } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Shield, Clock, Award, ShieldCheck, Lock, Star, Users, Gem, MapPin, Navigation, Phone, Mail } from 'lucide-react';
 import HeroSearchSection from '@/components/HeroSearchSection';
 import VehicleCard from '@/components/VehicleCard';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
@@ -49,8 +49,27 @@ export default function Home() {
     brands = [];
   }
 
+  // Default brands if none configured
+  const defaultBrands = [
+    { name: 'BMW', image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=400&q=80' },
+    { name: 'Mercedes-Benz', image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=400&q=80' },
+    { name: 'Audi', image: 'https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=400&q=80' },
+    { name: 'Porsche', image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&q=80' },
+    { name: 'Lexus', image: 'https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=400&q=80' },
+    { name: 'Land Rover', image: 'https://images.unsplash.com/photo-1606220838315-056192d5e927?w=400&q=80' },
+  ];
+  const displayBrands = brands.length > 0 ? brands : defaultBrands;
+
   const financingBgImage = settings.financingBgImage || 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1200&q=80';
   const aboutImage = settings.aboutImage || 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1200&q=80';
+  const mapEmbedUrl = settings.mapEmbedUrl || 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2606.8377!2d-123.1364!3d49.1983!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDnCsDExJzUzLjkiTiAxMjPCsDA4JzEwLjkiVw!5e0!3m2!1sen!2sca!4v1600000000000!5m2!1sen!2sca';
+  const phone = settings.phone || '+1 7789907468';
+  const email = settings.email || 'info@skayautogroup.ca';
+  const address = settings.address || 'Parking lot, 21320 Westminster Hwy #2128';
+  const city = settings.city || 'Richmond';
+  const state = settings.state || 'BC';
+  const zip = settings.zip || 'V5W 3A3';
+  const hours = settings.hours || 'Mon - Sat: 10am - 7pm';
 
   useEffect(() => {
     fetch('/api/vehicles?featured=true')
@@ -149,7 +168,7 @@ export default function Home() {
       </section>
 
       {/* Brands Showcase */}
-      <BrandsMarquee brands={brands} />
+      <BrandsMarquee brands={displayBrands} />
 
       {/* Financing CTA */}
       <section className="relative overflow-hidden">
@@ -232,6 +251,66 @@ export default function Home() {
                 </motion.div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Map / Visit Us */}
+      <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-[#C0A66A] text-sm tracking-[0.2em] uppercase mb-3">Visit Our Showroom</motion.p>
+            <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="text-3xl md:text-5xl font-light text-white">
+              Find Us in <span className="text-gradient-gold">Richmond</span>
+            </motion.h2>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Info Card */}
+            <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="bg-[#111] border border-white/10 p-8 h-fit">
+              <div className="w-14 h-14 bg-[#C0A66A]/10 flex items-center justify-center mb-6">
+                <MapPin className="w-6 h-6 text-[#C0A66A]" />
+              </div>
+              <h3 className="text-xl font-medium text-white mb-4">SKay Auto Group</h3>
+              <div className="space-y-2 text-white/60 mb-8">
+                <p>{address}</p>
+                <p>{city}, {state} {zip}</p>
+              </div>
+              <div className="space-y-4 mb-8">
+                <div className="flex items-center gap-3 text-white/60">
+                  <Clock className="w-4 h-4 text-[#C0A66A]" />
+                  <span className="text-sm">{hours}</span>
+                </div>
+                <div className="flex items-center gap-3 text-white/60">
+                  <Phone className="w-4 h-4 text-[#C0A66A]" />
+                  <a href={`tel:${phone.replace(/\s+/g, '')}`} className="text-sm hover:text-[#C0A66A] transition-colors">{phone}</a>
+                </div>
+                <div className="flex items-center gap-3 text-white/60">
+                  <Mail className="w-4 h-4 text-[#C0A66A]" />
+                  <a href={`mailto:${email}`} className="text-sm hover:text-[#C0A66A] transition-colors">{email}</a>
+                </div>
+              </div>
+              <Link
+                to="/directions"
+                className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-[#C0A66A] text-black font-medium hover:bg-[#D4BC86] transition-colors"
+              >
+                <Navigation className="w-4 h-4" />
+                Get Directions
+              </Link>
+            </motion.div>
+            {/* Map */}
+            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }} className="lg:col-span-2 bg-[#111] border border-white/10 overflow-hidden min-h-[400px]">
+              <iframe
+                src={mapEmbedUrl}
+                width="100%"
+                height="100%"
+                style={{ border: 0, minHeight: '100%' }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="SKay Auto Group Location"
+                className="grayscale-[30%]"
+              />
+            </motion.div>
           </div>
         </div>
       </section>

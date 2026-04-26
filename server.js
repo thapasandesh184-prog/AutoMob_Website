@@ -150,15 +150,16 @@ const upload = multer({
 app.post('/api/admin/upload', upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file provided' });
+    const fileBuffer = fs.readFileSync(req.file.path);
     const isVideo = req.file.mimetype.startsWith('video/');
-    const result = await uploadToCloudinary(req.file.path, {
+    const result = await uploadToCloudinary(fileBuffer, {
       folder: 'skay-auto-group/admin',
       resource_type: isVideo ? 'video' : 'image',
     });
     try { fs.unlinkSync(req.file.path); } catch {}
     res.json({ url: result.secure_url, public_id: result.public_id });
   } catch (err) {
-    console.error('Upload error:', err.message, err.stack);
+    console.error('Upload error:', err.message);
     res.status(500).json({ error: 'Upload failed', detail: err.message });
   }
 });
@@ -167,15 +168,16 @@ app.post('/api/admin/upload', upload.single('image'), async (req, res) => {
 app.post('/api/upload', upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file provided' });
+    const fileBuffer = fs.readFileSync(req.file.path);
     const isVideo = req.file.mimetype.startsWith('video/');
-    const result = await uploadToCloudinary(req.file.path, {
+    const result = await uploadToCloudinary(fileBuffer, {
       folder: 'skay-auto-group/public',
       resource_type: isVideo ? 'video' : 'image',
     });
     try { fs.unlinkSync(req.file.path); } catch {}
     res.json({ url: result.secure_url, public_id: result.public_id });
   } catch (err) {
-    console.error('Public upload error:', err.message, err.stack);
+    console.error('Public upload error:', err.message);
     res.status(500).json({ error: 'Upload failed', detail: err.message });
   }
 });

@@ -78,7 +78,9 @@ export default function SellYourCar() {
   };
 
   const handleImageUpload = async (e) => {
-    const files = Array.from(e.target.files || []);
+    const input = e.target;
+    const files = Array.from(input.files || []);
+    input.value = '';
     if (files.length === 0) return;
     setUploadingImages(true);
     for (const file of files) {
@@ -90,11 +92,12 @@ export default function SellYourCar() {
       }
     }
     setUploadingImages(false);
-    e.currentTarget.value = '';
   };
 
   const handleVideoUpload = async (e) => {
-    const files = Array.from(e.target.files || []);
+    const input = e.target;
+    const files = Array.from(input.files || []);
+    input.value = '';
     if (files.length === 0) return;
     setUploadingVideos(true);
     for (const file of files) {
@@ -106,7 +109,6 @@ export default function SellYourCar() {
       }
     }
     setUploadingVideos(false);
-    e.currentTarget.value = '';
   };
 
   const onSubmit = async (e) => {

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Car, Inbox, Settings, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, Car, Inbox, Settings, LogOut, Menu, X, HandCoins, Search } from "lucide-react";
 
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/cars/new", label: "Add Vehicle", icon: Car },
   { href: "/admin/submissions", label: "Submissions", icon: Inbox },
+  { href: "/admin/trade-ins", label: "Sell My Car", icon: HandCoins },
+  { href: "/admin/car-finder", label: "Car Finder", icon: Search },
   { href: "/admin/settings", label: "Site Settings", icon: Settings },
 ];
 

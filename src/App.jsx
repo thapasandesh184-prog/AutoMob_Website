@@ -24,6 +24,8 @@ import AdminDashboard from './admin/Dashboard';
 import AdminCars from './admin/Cars';
 import AdminEditCar from './admin/EditCar';
 import AdminSubmissions from './admin/Submissions';
+import AdminTradeIns from './admin/TradeInSubmissions';
+import AdminCarFinder from './admin/CarFinderSubmissions';
 import AdminSettings from './admin/Settings';
 
 function App() {
@@ -40,6 +42,8 @@ function App() {
             <Route path="/admin/cars/new" element={<AdminCars />} />
             <Route path="/admin/cars/:id/edit" element={<AdminEditCar />} />
             <Route path="/admin/submissions" element={<AdminSubmissions />} />
+            <Route path="/admin/trade-ins" element={<AdminTradeIns />} />
+            <Route path="/admin/car-finder" element={<AdminCarFinder />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
           </Routes>
         </AdminLayout>

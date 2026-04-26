@@ -13,9 +13,10 @@ export default function SellYourCar() {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [imageFiles, setImageFiles] = useState([]);
-  const [videoFiles, setVideoFiles] = useState([]);
-  const [uploadingFiles, setUploadingFiles] = useState(false);
+  const [imageUrls, setImageUrls] = useState([]);
+  const [videoUrls, setVideoUrls] = useState([]);
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [uploadingVideos, setUploadingVideos] = useState(false);
   const [formData, setFormData] = useState({
     year: '', make: '', model: '', trim: '', vin: '',
     mileage: '', color: '', transmission: '', condition: '',
@@ -64,47 +65,71 @@ export default function SellYourCar() {
 
   const prevStep = () => setStep((s) => Math.max(s - 1, 1));
 
-  const uploadFile = async (file) => {
+  const uploadFile = async (file, type) => {
     const fd = new FormData();
-    fd.append('file', file);
+    fd.append('image', file);
     const res = await fetch('/api/upload', { method: 'POST', body: fd });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Upload failed');
+    }
     const json = await res.json();
     return json.url || null;
+  };
+
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    setUploadingImages(true);
+    for (const file of files) {
+      try {
+        const url = await uploadFile(file, 'image');
+        if (url) setImageUrls((prev) => [...prev, url]);
+      } catch (err) {
+        alert(`Failed to upload ${file.name}: ${err.message}`);
+      }
+    }
+    setUploadingImages(false);
+    e.currentTarget.value = '';
+  };
+
+  const handleVideoUpload = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    setUploadingVideos(true);
+    for (const file of files) {
+      try {
+        const url = await uploadFile(file, 'video');
+        if (url) setVideoUrls((prev) => [...prev, url]);
+      } catch (err) {
+        alert(`Failed to upload ${file.name}: ${err.message}`);
+      }
+    }
+    setUploadingVideos(false);
+    e.currentTarget.value = '';
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!validateStep(step)) return;
     setIsSubmitting(true);
-    setUploadingFiles(true);
     try {
-      const photoUrls = [];
-      const videoUrls = [];
-      for (const file of imageFiles) {
-        const url = await uploadFile(file);
-        if (url) photoUrls.push(url);
-      }
-      for (const file of videoFiles) {
-        const url = await uploadFile(file);
-        if (url) videoUrls.push(url);
-      }
       const res = await fetch('/api/trade-in', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, photos: JSON.stringify(photoUrls), videos: JSON.stringify(videoUrls) }),
+        body: JSON.stringify({ ...formData, photos: JSON.stringify(imageUrls), videos: JSON.stringify(videoUrls) }),
       });
       if (res.ok) {
         alert('Submission received! We\'ll contact you shortly.');
         setSubmitted(true);
       } else {
-        alert('Failed to submit. Please try again.');
+        const err = await res.json().catch(() => ({}));
+        alert(err.detail || 'Failed to submit. Please try again.');
       }
-    } catch {
-      alert('Something went wrong.');
+    } catch (err) {
+      alert('Something went wrong: ' + err.message);
     } finally {
       setIsSubmitting(false);
-      setUploadingFiles(false);
     }
   };
 
@@ -238,32 +263,33 @@ export default function SellYourCar() {
                           <div className="space-y-3">
                             <label className="flex items-center gap-2 text-white/80 text-sm">
                               <ImageIcon className="w-4 h-4 text-[#C0A66A]" />
-                              Photos
+                              Photos {imageUrls.length > 0 && <span className="text-white/40">({imageUrls.length})</span>}
                             </label>
                             <div className="flex flex-wrap gap-3">
-                              {imageFiles.map((file, idx) => (
+                              {imageUrls.map((url, idx) => (
                                 <div key={idx} className="relative w-20 h-20 border border-white/10 bg-black">
-                                  <img src={URL.createObjectURL(file)} alt={file.name} className="w-full h-full object-cover" />
+                                  <img src={url} alt={`Upload ${idx + 1}`} className="w-full h-full object-cover" />
                                   <button
                                     type="button"
-                                    onClick={() => setImageFiles(imageFiles.filter((_, i) => i !== idx))}
+                                    onClick={() => setImageUrls(imageUrls.filter((_, i) => i !== idx))}
                                     className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white flex items-center justify-center"
                                   >
                                     <X className="w-3 h-3" />
                                   </button>
                                 </div>
                               ))}
-                              <label className="relative cursor-pointer w-20 h-20 border border-dashed border-white/20 bg-black flex flex-col items-center justify-center text-white/50 hover:text-white hover:border-[#C0A66A]/50 transition-colors">
+                              {uploadingImages && (
+                                <div className="w-20 h-20 border border-white/10 bg-black flex items-center justify-center">
+                                  <Loader2 className="w-5 h-5 text-[#C0A66A] animate-spin" />
+                                </div>
+                              )}
+                              <label className={`relative cursor-pointer w-20 h-20 border border-dashed border-white/20 bg-black flex flex-col items-center justify-center text-white/50 hover:text-white hover:border-[#C0A66A]/50 transition-colors ${uploadingImages ? 'opacity-50 pointer-events-none' : ''}`}>
                                 <input
                                   type="file"
                                   accept="image/*"
                                   multiple
                                   className="absolute inset-0 opacity-0 cursor-pointer"
-                                  onChange={(e) => {
-                                    const files = Array.from(e.target.files || []);
-                                    setImageFiles((prev) => [...prev, ...files]);
-                                    e.currentTarget.value = '';
-                                  }}
+                                  onChange={handleImageUpload}
                                 />
                                 <Upload className="w-4 h-4 mb-1" />
                                 <span className="text-[10px]">Add</span>
@@ -273,32 +299,33 @@ export default function SellYourCar() {
                           <div className="space-y-3">
                             <label className="flex items-center gap-2 text-white/80 text-sm">
                               <Film className="w-4 h-4 text-[#C0A66A]" />
-                              Videos
+                              Videos {videoUrls.length > 0 && <span className="text-white/40">({videoUrls.length})</span>}
                             </label>
                             <div className="flex flex-wrap gap-3">
-                              {videoFiles.map((file, idx) => (
+                              {videoUrls.map((url, idx) => (
                                 <div key={idx} className="relative w-28 h-20 border border-white/10 bg-black flex items-center justify-center">
-                                  <span className="text-[10px] text-white/70 px-2 text-center truncate max-w-full">{file.name}</span>
+                                  <span className="text-[10px] text-white/70 px-2 text-center truncate max-w-full">Video {idx + 1}</span>
                                   <button
                                     type="button"
-                                    onClick={() => setVideoFiles(videoFiles.filter((_, i) => i !== idx))}
+                                    onClick={() => setVideoUrls(videoUrls.filter((_, i) => i !== idx))}
                                     className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white flex items-center justify-center"
                                   >
                                     <X className="w-3 h-3" />
                                   </button>
                                 </div>
                               ))}
-                              <label className="relative cursor-pointer w-20 h-20 border border-dashed border-white/20 bg-black flex flex-col items-center justify-center text-white/50 hover:text-white hover:border-[#C0A66A]/50 transition-colors">
+                              {uploadingVideos && (
+                                <div className="w-20 h-20 border border-white/10 bg-black flex items-center justify-center">
+                                  <Loader2 className="w-5 h-5 text-[#C0A66A] animate-spin" />
+                                </div>
+                              )}
+                              <label className={`relative cursor-pointer w-20 h-20 border border-dashed border-white/20 bg-black flex flex-col items-center justify-center text-white/50 hover:text-white hover:border-[#C0A66A]/50 transition-colors ${uploadingVideos ? 'opacity-50 pointer-events-none' : ''}`}>
                                 <input
                                   type="file"
                                   accept="video/*"
                                   multiple
                                   className="absolute inset-0 opacity-0 cursor-pointer"
-                                  onChange={(e) => {
-                                    const files = Array.from(e.target.files || []);
-                                    setVideoFiles((prev) => [...prev, ...files]);
-                                    e.currentTarget.value = '';
-                                  }}
+                                  onChange={handleVideoUpload}
                                 />
                                 <Upload className="w-4 h-4 mb-1" />
                                 <span className="text-[10px]">Add</span>
@@ -465,13 +492,13 @@ export default function SellYourCar() {
                     ) : (
                       <button
                         type="submit"
-                        disabled={isSubmitting || uploadingFiles}
+                        disabled={isSubmitting || uploadingImages || uploadingVideos}
                         className="inline-flex items-center gap-2 px-4 py-2 bg-[#C0A66A] text-black hover:bg-[#D4BC86] font-medium transition-colors disabled:opacity-60"
                       >
-                        {isSubmitting || uploadingFiles ? (
+                        {isSubmitting ? (
                           <>
                             <Loader2 className="w-4 h-4 animate-spin" />
-                            {uploadingFiles ? 'Uploading files...' : 'Submitting...'}
+                            Submitting...
                           </>
                         ) : (
                           'Get My Offer'
